@@ -99,7 +99,7 @@
         <hr>
         <div class="d-flex justify-content-center gap-1">
             <button class="whole_btn" onclick="orderJS()">전체 상품 주문</button>
-            <button class="select_btn">선택 상품 주문</button>
+            <button class="select_btn" onclick="submitSelectedItems()">선택 상품 주문</button>
         </div>
         <div class="notice_cart_box">
             <p class="mt-3 notice">장바구니 이용안내</p>
@@ -383,5 +383,36 @@
         for(let del_cart of del_carts){
            del_cart.click();
         }
+    }
+
+    //선택한 상품 주문페이지로 보내기
+    function submitSelectedItems(){
+        // 선택된 체크박스 수집
+        const selectedItems = Array.from(document.querySelectorAll('.cartChkBox:checked')).map(checkbox=>{
+            const itemId = checkbox.value;
+
+            return {itemId, count};
+        });
+
+        if(selectedItems.length ===0){
+            alert("선택된 상품이 없습니다.");
+            return;
+        }
+
+        //폼 생성 및 데이터 전송
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/cartorder'
+
+        selectedItems.forEach(item =>{
+            const inputItemId = document.createElement('input');
+            inputItemId.type="hidden";
+            inputItemId.name="itemIds[]"; //배열로 전달
+            inputItemId.value= item.itemId;
+            form.appendChild(inputItemId);
+        })
+
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
