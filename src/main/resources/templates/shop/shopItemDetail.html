@@ -1,0 +1,491 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+    <div class="title">
+        <Strong>상품 상세페이지</Strong>
+    </div>
+    <div class="container mx-auto d-flex">
+
+        <!-- 아이템 이미지 -->
+        <div class="Main_image w-50">
+            <img class="itemImg_select" th:src="${item.itemImgDTOList[0].imgUrl}"/>
+            <div class="d-flex gap-2 justify-content-start mt-3 itemimg_slider">
+                <div th:each="itemImg : ${item.itemImgDTOList}">
+                    <img class="itemImg" th:src="${itemImg.imgUrl}" alt="이미지준비중" onerror="this.src='../../images/이미지준비중.jpg'; this.classList.add('error-image')"/>
+                </div>
+            </div>
+        </div>
+        <div class="itemDetail_box w-50">
+            <!-- 정보 전달 용도 사용(장바구니, 주문하기) : 상품 id -->
+            <input type="hidden" th:value="${item.id}" id="itemId">
+
+            <!-- 상품 기본 정보 -->
+            <table>
+                <tbody>
+                <tr><td><span class="item_nm">[[${item.itemNm}]]</span></td></tr>
+                <tr><td><span class="item_price_origin"><strong>[[${#numbers.formatInteger(item.price * 1.1,3,'COMMA')}]]원</strong></span></td></tr>
+                <tr><td><span class="item_price">[[${#numbers.formatInteger(item.price,3,'COMMA')}]]원</span></td></tr>
+                <tr><td class="table_items"><span class="item_info">[[${item.itemDetail}]]</span></td></tr>
+                <tr><td class="table_items"><span class="item_info">국내배송</span></td></tr>
+                <tr><td><span class="item_info">택배 5,000원</span></td></tr>
+                </tbody>
+            </table>
+            <!-- 상품 기본 정보 -->
+
+            <!-- 상품옵션 박스-->
+            <div class="item_option_box mt-3">
+                <table>
+                    <tbody>
+                        <tr><td class="table_items">색상</td></tr>
+                        <tr><td class="pt-1">
+                            <select class="item_option_select" id="color_selector">
+                                <option selected>- [필수] 색상을 선택해주세요 -</option>
+                                <option disabled>---------------------</option>
+                                <option value="blue">blue</option>
+                                <option value="black">black</option>
+                                <option value="white">white</option>
+                            </select>
+                        </td></tr>
+                        <tr><td class="table_items">사이즈</td></tr>
+                        <tr><td class="pt-1">
+                            <select class="item_option_select" id="size_selector">
+                                <option selected>- [필수] 사이즈를 선택해주세요 -</option>
+                                <option disabled>---------------------</option>
+                                <option value="S">SMALL</option>
+                                <option value="M">Medium</option>
+                                <option value="L">Large</option>
+                            </select>
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 상품색상 색상,사이즈,수량 선택시 확인창 -->
+            <div class="mt-3 confirm_window">
+                <hr>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <span>[[${item.itemNm}]]</span>
+                    </div>
+                    <div>
+                        <span id="item_price" th:value="${item.price}">[[${item.price}]]</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <span class="selected_value">사이즈,색상정보 들어갈곳</span>
+                    </div>
+                    <div>
+                        <button type="button" id="del_btn">삭제</button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start mt-1">
+                    <button class="count_btn" id="count_decrease_btn">-</button>
+                    <input class="count_input" type="text" name="count" id="count" value="1" min="1">
+                    <button class="count_btn" id="count_increase_btn">+</button>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <div><strong>총 상품금액(수량)</strong></div>
+                    <div><span class="total_price"></span><span class="total_count"></span></div>
+                </div>
+
+            </div>
+
+            <!-- 장바구니 및 바로구매 버튼 -->
+            <div class="d-flex sell_buttons">
+                <button class="cart_btn" type="button" onclick="addCartJS()">장바구니</button>
+                <a class="order_btn" th:href="@{#}">바로 주문하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구매후기 추천 별점도 -->
+    <div class="container mx-auto">
+        <div class="mt-3 review_table">
+            <table>
+                <tr><td class="table_items"><span class="buy_title">구매 후기</span></td></tr>
+                <tr><td class="pt-1">
+                    <div class="d-flex gap-2 justify-content-start mt-3">
+                        <!-- 구매후기 반복될 유닛-->
+                        <!-- <div th:each="itemImg : ${item.itemImgDTOList}"> -->
+                        <div class="review">
+                            <!-- 후기 제목 -->
+                            <div class="review-title">텐트 내돈내산 찐후기</div>
+                            <!-- 별점 -->
+                            <div class="review-rating">★★★★☆</div>
+                            <!-- 후기 내용 -->
+                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
+                        </div>
+
+                        <div class="review">
+                            <!-- 후기 제목 -->
+                            <div class="review-title">텐트 내돈내산 찐후기</div>
+                            <!-- 별점 -->
+                            <div class="review-rating">★★★★☆</div>
+                            <!-- 후기 내용 -->
+                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
+                        </div>
+
+                        <div class="review">
+                            <!-- 후기 제목 -->
+                            <div class="review-title">텐트 내돈내산 찐후기</div>
+                            <!-- 별점 -->
+                            <div class="review-rating">★★★★☆</div>
+                            <!-- 후기 내용 -->
+                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
+                        </div>
+
+                    </div>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Axios: 비동기 처리 라이브러리 -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- 정적리소스 static:폴더 기준 -->
+    <script th:src="@{/axiosJS/axiosCart.js}"></script>
+</div>
+
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+*{pointer-events: none;}
+a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+p{pointer-events: auto;}
+input{pointer-events: auto;}
+img{pointer-events: auto;}
+table{pointer-events: auto; width:100%;}
+select{pointer-events: auto;}
+option{pointer-events: auto;}
+scroll{pointer-events: auto;}
+button{pointer-events: auto;}
+
+.Main_image{
+    margin-top: 100px;
+    margin-right: 100px;
+}
+
+.itemDetail_box{
+    margin-top: 100px;
+}
+
+.itemImg_select{
+    width: 648px;
+    height: 500px;
+    object-fit: cover;
+    margin-top: 5px;
+}
+
+.itemimg_slider{
+    overflow-x:auto;
+    pointer-events:auto;
+}
+
+.itemImg{
+    display:flex;
+    width: 108px;
+    height: 108px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    cursor: pointer; /* 마우스 포인터를 손 모양으로 변경 */
+}
+
+.error-image {
+    cursor: default; /* 에러 이미지일 경우 기본 커서로 변경 */
+    opacity: 0.5; /* 시각적으로 에러 이미지를 구분 */
+}
+
+.item_nm{
+    font-size: 25px;
+    margin-bottom:10px;
+}
+
+.item_price_origin{
+    text-decoration: line-through;
+    color: rgba(128, 128, 128, 0.6); /* 회색(128, 128, 128)과 투명도 0.6 */
+}
+
+.item_price{
+    color: rgb(53,97,70);
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.item_info{
+    font-size: 15px;
+}
+
+.item_option_select{
+    height: 40px;
+    vertical-align:middle;
+    width: 100%
+}
+
+.table_items{
+    padding-top: 15px;
+}
+
+.review {
+  border: 1px solid #ddd; /* 후기 단위 경계 */
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  height:200px;
+  width:350px;
+}
+
+.review-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.review-rating {
+  color: #ffcc00; /* 별점 색상 */
+  margin-bottom: 5px;
+}
+
+.review-content {
+  font-size: 1rem;
+  color: #333;
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 말줄임 표시 */
+  white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+  max-width: 100%; /* 부모 요소 크기에 맞춤 */
+}
+
+.review_table{
+    overflow-x:auto;
+    pointer-events:auto;
+}
+
+.sell_buttons{
+    margin-top: 40px;
+}
+
+.cart_btn{
+    width:30%;
+    margin-right:10px;
+    border:1px solid black;
+    height:40px;
+    background-color:black;
+    color:white;
+}
+
+.cart_btn:hover{
+    background-color: rgba(0,0,0,0.3);
+    border:1px solid rgba(0,0,0,0.3);
+    color:rgb(255,255,255);
+}
+
+.order_btn{
+    width:70%;
+    display:flex;
+    background-color: rgba(0,0,0,0);
+    border:1px solid;
+    height:40px;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    text-align:center;
+}
+
+.order_btn:hover{
+    background-color: rgba(0,0,0,0.8);
+    color:rgb(255,255,255);
+}
+
+.confirm_window{
+    display: none;
+}
+
+.count_btn{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border: 1px solid rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0);
+    width:23px;
+    height:23px;
+}
+
+.count_input{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-top: 1px solid rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    border-left: 0px;
+    border-right: 0px;
+    background: rgba(0,0,0,0);
+    width:30px;
+    height:23px;
+    text-align: center;
+}
+
+#del_btn{
+    width: 30px;
+    height: 23px;
+    border: 0px;
+    background: rgba(0,0,0,0);
+}
+
+.total_price{
+    font-weight: 800;
+}
+
+.total_count{
+    font-weight: 800;
+}
+
+.buy_title{
+    font-weight: 800;
+    font-size: 30px;
+}
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+    console.log("자바스크립트 연결 완료")
+
+    //----------------------------------------------------------//
+    //              아이템 이미지 클릭 및 뷰 관련
+    //----------------------------------------------------------//
+
+    const itemImgs = document.querySelectorAll(".itemImg");
+    const mainImg = document.querySelector('.itemImg_select');
+
+    itemImgs.forEach((img)=>{
+        img.addEventListener("click", function(){
+                if (this.classList.contains("error-image")) {
+                    return;
+                }
+            mainImg.src = this.src;
+        });
+
+        img.addEventListener("mouseenter",function(){
+            if (this.classList.contains("error-image")){
+                return;
+            }
+            mainImg.src=this.src;
+        });
+    });
+
+    //----------------------------------------------------------//
+    //              사이즈,색상,숫자 정보창
+    //----------------------------------------------------------//
+
+    const colorSelector = document.querySelector("#color_selector");
+    const sizeSelector = document.querySelector("#size_selector");
+    const confirmWindow = document.querySelector(".confirm_window");
+    const selectedValueSpan = document.querySelector(".selected_value");
+    const deleteButton = document.querySelector("#del_btn");
+    const decreaseBtn = document.querySelector('#count_decrease_btn');
+    const increaseBtn = document.querySelector('#count_increase_btn');
+    const countInput = document.querySelector('#count');
+    const item_price = document.querySelector('#item_price');
+    const total_price = document.querySelector('.total_price');
+    const total_count = document.querySelector('.total_count');
+
+    const unitPrice = [[${item.price}]];
+
+    console.log(unitPrice);
+
+    // 가격 업데이트 함수
+    function updatePrice(){
+        const count = parseInt(countInput.value,10);//현재수량
+        const totalPrice = unitPrice * count;
+        item_price.innerHTML = totalPrice.toLocaleString()+' 원';
+        total_price.innerHTML = (totalPrice+5000).toLocaleString()+' 원';
+        total_count.innerHTML = '('+count+'개)';
+    }
+
+    // 옵션 선택 이벤트 핸들러
+    function updateConfirmWindow() {
+      const selectedColor = colorSelector.value;
+      const selectedSize = sizeSelector.value;
+
+      // 모든 옵션이 선택되었는지 확인
+      if (selectedColor && selectedSize && selectedColor !== "- [필수] 색상을 선택해주세요 -" && selectedSize !== "- [필수] 사이즈를 선택해주세요 -") {
+        // 선택된 값 표시
+        selectedValueSpan.textContent = `색상: ${selectedColor} 사이즈: ${selectedSize}`;
+
+        // 확인창 표시
+        confirmWindow.style.display = "block";
+      }
+    }
+
+    // 색상 및 사이즈 선택 시 이벤트 등록
+    colorSelector.addEventListener("change", updateConfirmWindow);
+    sizeSelector.addEventListener("change", updateConfirmWindow);
+
+    // 삭제 버튼 클릭 시 확인창 숨기기
+    deleteButton.addEventListener("click", () => {
+      confirmWindow.style.display = "none";
+      selectedValueSpan.textContent = "사이즈, 색상 정보 들어갈 곳";
+
+      // 선택 초기화
+      colorSelector.selectedIndex = 0;
+      sizeSelector.selectedIndex = 0;
+
+      // 가격 및 선택 개수 초기화
+      countInput.value = 1;
+      updatePrice();
+    });
+
+    decreaseBtn.addEventListener('click',function(){
+        const currentValue = parseInt(countInput.value,10);//현재값
+        const minValue = 1;
+        if(currentValue>minValue){
+            countInput.value = currentValue -1;// 값 감소
+            updatePrice();
+        }
+    });
+
+    increaseBtn.addEventListener("click", () => {
+      const currentValue = parseInt(countInput.value, 10); // 현재 값
+      countInput.value = currentValue + 1; // 값 증가
+      updatePrice();
+    });
+
+    countInput.addEventListener("input",updatePrice);
+    updatePrice();
+
+    //----------------------------------------------------------//
+    //              Axios: 장바구니 담는 함수 선언
+    //----------------------------------------------------------//
+
+    function addCartJS(){
+
+        const cartItemData= {
+            itemId : document.querySelector('#itemId').value,
+            count : document.querySelector('#count').value
+        }
+
+        //장바구니 담기처리 요청하기(비동기 처리)
+        cartItem(cartItemData)
+        .then((result)=>{
+            alert("상품을 장바구니에 담았습니다.")
+            location.href="/shop/main"
+        })
+        .catch((e)=>{
+            if(e.response.status=="500"){
+                alert("로그인 후 이용해 주세요.")
+                location.href='/member/login'
+            }else{
+                alert('error code: '+e.response.status+'\n'+re.response.data)
+            }
+        });
+    }
+
+</script>

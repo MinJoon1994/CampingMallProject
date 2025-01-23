@@ -1,0 +1,387 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+    <div class="container w-50 mx-auto total_form">
+        <div class="d-flex justify-content-start">
+            <span class="title">장바구니</span>
+        </div>
+        <div class="d-flex justify-content-start mt-1 mb-2">
+            <span><strong>국내배송상품([[${cartItems.size}]])</strong></span>
+        </div>
+        <table>
+            <thead>
+                <colgroup>
+                    <col width="25%">
+                    <col width="60%">
+                    <col width="15%">
+                </colgroup>
+            </thead>
+            <tbody>
+                <tr class="top-line p-1"></tr>
+                <tr class="cart_item_list" th:each="cartItem : ${cartItems}">
+                    <td><img class="img-thumbnail" th:src="${cartItem.imgUrl}" th:alt="${cartItem.itemNm}"></td>
+                    <td>
+                        <div>
+                            [[${cartItem.itemNm}]]
+                        </div>
+                        <div class="hidden-box" th:id="'price_'+${cartItem.cartItemId}"
+                             th:data-price="${cartItem.price}"></div>
+                        <div>
+                            <div th:id="'totalPrice_'+${cartItem.cartItemId}"
+                                name="totalPrice" th:text="${#numbers.formatInteger((cartItem.count*cartItem.price),0,'COMMA')+'원'}"></div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-1">
+                            <button class="count_btn" th:data-itemid='${cartItem.cartItemId}' th:data-click='minus'  th:id="'decrease'+${cartItem.cartItemId}">-</button>
+                            <input class="count_input"
+                                   th:value="${cartItem.count}" type="text" name="count"
+                                   th:id="'count_'+${cartItem.cartItemId}" value="1" min="1"
+                                    onchange="changeCountJS(this)">
+                            <button class="count_btn" th:data-itemid='${cartItem.cartItemId}' th:data-click='plus' th:id="'increase'+${cartItem.cartItemId}">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-end gap-3">
+                            <div class="p-1">
+                                <input type="checkbox"
+                                       class="cartChkBox"
+                                       name="cartChkBox"
+                                       th:value="${cartItem.cartItemId}"
+                                       th:id="'cartChkBox_'+${cartItem.cartItemId}">
+                                </div>
+                            <div>
+
+                                <button type="button" class="delete_btn">
+                                    <span th:data-id="${cartItem.cartItemId}"
+                                          th:id="'del_cart'+${cartItem.cartItemId}"
+                                          onclick="deleteCartItemJS(this)">
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                              </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="bottom-line p-1"></tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between mt-3 mb-3">
+            <div class="d-flex gap-2">
+                <button class="del_cart_btn">장바구니 비우기</button>
+            </div>
+            <div class="d-flex gap-2">
+                <input type="checkbox" name="checkall" id="checkall" onclick="checkAllJS()"/> 전체선택
+            </div>
+        </div>
+        <div class="container w-75 mt-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    결제예정금액
+                </div>
+                <div>
+                    <h3><span class="" id="orderTotalPrice">0</span> 원</h3>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <div>
+                    총 배송비
+                </div>
+                <div>
+                    <h3>5000 원</h3>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-center gap-1">
+            <button class="whole_btn" onclick="orderJS()">전체 상품 주문</button>
+            <button class="select_btn">선택 상품 주문</button>
+        </div>
+        <div class="notice_cart_box">
+            <p class="mt-3 notice">장바구니 이용안내</p>
+        </div>
+        <ul class="mt-3">
+            <li>선택하신 상품의 수량을 변경하시려면 +,-버튼을 누르시면 됩니다.</li>
+            <li>상품별 무이자할부 혜택을 받으시려면 무이자할부 상품만 선택하여[주문하기] 버튼을 눌러 주문/결제 하시면 됩니다.</li>
+            <li>단, 전체 상품을 주문/결제 하실 경우, 상품별 무이자할부 혜택은 받으실 수 없습니다.</li>
+        </ul>
+    </div>
+
+    <!-- Axios: 비동기 처리 라이브러리 -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- 정적리소스 static:폴더 기준 -->
+    <script th:src="@{/axiosJS/axiosCart.js}"></script>
+</div>
+
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+    *{pointer-events: none;}
+    a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+    p{pointer-events: auto;}
+    input{pointer-events: auto;}
+    img{pointer-events: auto;}
+    table{pointer-events: auto; width:100%;}
+    select{pointer-events: auto;}
+    option{pointer-events: auto;}
+    scroll{pointer-events: auto;}
+    button{pointer-events: auto;}
+    span{pointer-events: auto;}
+
+    .total_form{
+        margin-top:100px;
+    }
+
+    .title{
+        font-weight: 800;
+        font-size: 25px;
+    }
+
+    .img-thumbnail{
+        width:150px;
+        height:150px;
+        object-fit:cover;
+        border:0px;
+    }
+
+    .bottom-line{
+        height:27px;
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .top-line{
+        height:27px;
+        border-top: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .notice_cart_box{
+        margin-top:100px;
+    }
+
+    .notice{
+        color:rgba(0,0,0,0.4);
+    }
+
+    ul{
+        padding:0;
+        color:rgba(0,0,0,0.4);
+    }
+
+    .delete_btn{
+        background: rgba(0,0,0,0);
+        border: 0px;
+        margin-left:30px;
+        align-items:center;
+    }
+
+    .whole_btn{
+        width:25%;
+        margin-right:10px;
+        border:1px solid black;
+        height:40px;
+        background-color:black;
+        color:white;
+    }
+
+    .whole_btn:hover{
+        background-color: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3);
+        color:rgb(255,255,255);
+    }
+
+    .select_btn{
+        width:25%;
+        display:flex;
+        background-color: rgba(0,0,0,0);
+        border:1px solid;
+        height:40px;
+        justify-content: center; /* 수평 중앙 정렬 */
+        align-items: center; /* 수직 중앙 정렬 */
+        text-align:center;
+    }
+
+    .select_btn:hover{
+        background-color: rgba(0,0,0,0.8);
+        color:rgb(255,255,255);
+    }
+
+    .del_cart_btn{
+        border: 0px;
+        background: rgba(0,0,0,0);
+    }
+
+    .count_input{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        border-top: 1px solid rgba(0,0,0,0.3);
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+        border-left: 0px;
+        border-right: 0px;
+        background: rgba(0,0,0,0);
+        width:30px;
+        height:23px;
+        text-align: center;
+    }
+
+    .count_btn{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        border: 1px solid rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0);
+        width:23px;
+        height:23px;
+    }
+
+    .hidden-box{
+        display:none;
+    }
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+    console.log("자바스크립트 연결 완료")
+
+    const checkItems = document.querySelectorAll('.cartChkBox');
+    console.log(checkItems)
+
+    for(let checkItem of checkItems){
+        checkItem.addEventListener('change',(e)=>{
+            let item = e.target
+            console.log(e.target)
+            getOrderTotalPriceJS()
+        })
+    }
+
+    const count_btn = document.querySelectorAll('.count_btn')
+
+    count_btn.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        let clickBtn = e.target;
+        let itemId = clickBtn.getAttribute('data-itemid');
+        let sign = clickBtn.getAttribute('data-click');
+
+        // count 값 가져오기
+        const countInput = document.querySelector('#count_' + itemId);
+        let count = parseInt(countInput.value, 10); // 문자열을 숫자로 변환
+
+        //count 값 업데이트
+        if(sign=="plus"){
+            count += 1;
+        }else if(sign=="minus"){
+            if(count>1){count -= 1;}
+        }
+
+        //업데이트 된 값 반영
+        countInput.value=count;
+
+        //이벤트 강제발생 트리거
+        countInput.dispatchEvent(new Event('change'));
+      });
+    });
+
+    // 결제예정금액 계산
+    function getOrderTotalPriceJS(){
+        let orderTotalPrice = 0;
+        let isCheckItems = document.querySelectorAll('.cartChkBox:checked')
+        console.log('checked item count:', isCheckItems.length)
+
+        if(isCheckItems.length == checkItems.length){
+            document.querySelector('#checkall').checked = true
+        }else{
+            document.querySelector('#checkall').checked = false
+        }
+
+        //체크된 항목 총 금액 계산
+        for(let isCheckItem of isCheckItems){
+            let cartItemId = isCheckItem.value;
+            let price = document.querySelector('#price_'+cartItemId).getAttribute('data-price')
+            let count = document.querySelector('#count_'+cartItemId).value;
+            let totalPrice = count * price
+
+            orderTotalPrice +=(price*count)
+        }
+        console.log(orderTotalPrice)
+        //총금액 계산 결과값 DOM에 View
+       document.querySelector('#orderTotalPrice').innerHTML =
+            orderTotalPrice.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+
+    }
+
+    //장바구니 상품 항목 취소(삭제)
+    function deleteCartItemJS(obj){
+        let cartItemId = obj.getAttribute('data-id');
+        console.log("삭제할 장바구니 상품 Id : ",cartItemId)
+
+        //Axios 로 서버에서 장바구니 상품 삭제
+        deleteCartItemAxios(cartItemId)
+            .then((res)=>{
+                alert('상품이 장바구니에서 삭제 되었습니다.')
+                location.href="/cart"
+            })
+            .catch((e)=>{
+                if(e.status=='401'){
+                    alert('로그인 후 이용해주세요.')
+                    location.href='/members/login'
+                }else{
+                    alert('상품을 장바구니에서 삭제하지 못하였습니다.',e.status)
+                }
+            })
+    }
+
+    //axois 로 처리하는 함수 선언
+    //5. 장바구니 수량 변경 요청시
+    function changeCountJS(obj){
+        let count = obj.value
+        let cartItemId = obj.id.split('_')[1] //주문상품 아이디 값 추출
+        let price = document.querySelector('#price_'+cartItemId).getAttribute('data-price')
+        let totalPrice = count * price
+
+        let fmt_totalPrice = totalPrice.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+
+        document.querySelector('#totalPrice_'+cartItemId).innerHTML = fmt_totalPrice + '원'
+
+        //5.2 수량변경시 아래쪽 총 금액 계산
+        getOrderTotalPriceJS()
+
+        //5.3 axios 비동기 DB반영
+        updateCartItemCountJS(cartItemId,count)
+            .then((res)=>{
+                console.log(res)
+                console.log("success code: "+res.status)
+            })
+            .catch((e)=>{console.log('error code')})
+    }
+
+    //전체 체크
+    function checkAllJS(){
+        let checkAll = document.querySelector('#checkall')
+        //4.1 전체 체크
+        checkAll.addEventListener('change',()=>{
+            if(checkAll.checked){
+                for(let item of checkItems){
+                    item.checked = true
+                }
+            }else{
+                for(let item of checkItems){
+                    item.checked = false
+                }
+            }
+            //4.2 전체체크 여부 설정한 후 총 금액 계산
+            getOrderTotalPriceJS();
+        })
+    }
+
+    function deleteAllItems(){
+        let del_carts = document.querySelectAll('#del_cart');
+
+        for(let del_cart of del_carts){
+           del_cart.click();
+        }
+    }
+</script>

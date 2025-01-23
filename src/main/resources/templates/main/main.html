@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>캠핑의 시작</title>
+
+    <!-- 내부 스타일 css -->
+    <link href="/main/css/main.css"
+          th:href="@{/main/css/main.css}" rel="stylesheet"/>
+    <link href="/search/search.css"
+          th:href="@{/search/search.css}" rel="stylesheet"/>
+    <link href="/topnotice/topnotice.css"
+          th:href="@{/topnotice/topnotice.css}" rel="stylesheet"/>
+
+    <!-- 부트 스트랩 스타일 css -->
+    <link href="bs/css/styles.css"
+          th:href="@{/bs/css/styles.css}" rel="stylesheet"/>
+    <link href="bs/css/styles.css"
+          th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css}" rel="stylesheet"/>
+
+    <!-- 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=East+Sea+Dokdo&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Batang&display=swap" rel="stylesheet">
+
+    <!-- 아이콘 -->
+    <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+
+    <!-- 내부 JS -->
+    <script th:src="@{main/js/main.js}" defer></script>
+    <script th:src="@{search/search.js}" defer></script>
+
+    <!-- 제이쿼리 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+</head>
+<body>
+
+<!-- 상단 공지 슬라이더-->
+<div class="top-banner">
+    <div class="marquee">
+        <span>공지사항: 12/24(화)~12/26(목)은 구매요청이 많아 배송이 지연될 수 있습니다.</span>
+    </div>
+</div>
+
+<!-- Search 오버레이 -->
+<form th:action="@{'/shop/main'}" method="get" th:object="${itemSearchDTO}">
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-container">
+            <input type="text" th:field="*{searchQuery}" placeholder="검색어를 입력하세요" class="search-input">
+            <button class="search_submit_btn" type="submit"></button>
+            <button class="close-btn" id="close-btn">CLOSE</button>
+        </div>
+    </div>
+</form>
+
+<!-- 네비게이션 바-->
+<nav class="d-flex justify-content-between nav">
+    <div>
+        <ul class="left-nav m-3 p-3">
+            <li><a href="/" id="CampingMall">CAMPING MALL</a></li>
+            <li><a href="/shop/main" class="navbar">SHOP</a></li>
+            <li><a href="#" class="navbar">ABOUT</a></li>
+            <li><a href="#" class="navbar">SNAPSHOT</a></li>
+            <li><button id="com_btn" class="com_btn">COMMUNITY</button>
+                <div class="hidden" id="com_box">
+                    <div class="item">
+                        <a href="#" class="navbar">Q&A</a>
+                    </div>
+                    <div class="item">
+                        <a href="#" class="navbar">FAQ</a>
+                    </div>
+                    <div class="item">
+                        <a href="#" class="navbar">NOTICE</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <ul class="Login-nav m-3 p-3">
+            <li sec:authorize="isAuthenticated()">
+                <a class="navbar" th:href="@{#}">[[${#authentication.principal.username}]]<span class="navbar_name">님</span></a>
+            </li>
+            <li sec:authorize="isAnonymous()">
+                <a class="navbar" th:href="@{/member/login}">LOGIN</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a class="navbar" th:href="@{/logout}">LOGOUT</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="/admin/item/new"  class="navbar">REGISTER</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="#"  class="navbar">ACCOUNT</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="/cart"  class="navbar">CART</a>
+            </li>
+            <li>
+                <button id="search-btn" class="me-4">SEARCH</button>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- 메인 사진 이미지 화면 -->
+<section class="conA">
+    <div class="slider">
+        <a href="#" class="slide"></a>
+        <a href="#" class="slide"></a>
+        <a href="#" class="slide"></a>
+        <a href="#" class="slide"></a>
+        <a href="#" class="slide"></a>
+    </div>
+</section>
+
+<!-- 메인 레터링 화면-->
+<section class="conB">
+    <div class="showBox">
+        <div class="logo">
+            <h1>캠핑의 시작은 캠핑몰과 함께</h1>
+            <h2>텐트안은 곧 나만의 작은 세계 그곳에서 나는 현실과 교감하며 산다.</h2>
+            <p>Camping begins with a Camping Mall</p>
+            <p>Inside the tent is my own little world. There I live in communion with reality.</p>
+        </div>
+        <div class="container">
+            <div class="text">
+            <span>
+                <div class="icon"><img src="../images/icons/tent.png"/></div>
+            </span>
+                <h2>안락한 텐트</h2>
+                <p>COMFOTABLE TENT</p>
+                <a th:href="@{'/shop/main'+'?searchQuery='+${itemSearchDTO.searchQuery}+'&itemTypes=A'}">More... </a><i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </div>
+            <div class="v-line"></div>
+            <div class="text">
+                <span>
+                    <div class="icon"><img src="../images/icons/lantern.png"/></div>
+                </span>
+                <h2>감성적인 조명</h2>
+                <p>EMOTIONAL LANTERN</p>
+                <a th:href="@{'/shop/main'+'?searchQuery='+${itemSearchDTO.searchQuery}+'&itemTypes=B'}">More... </a><i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </div>
+            <div class="v-line"></div>
+            <div class="text">
+                <span>
+                    <div class="icon"><img src="../images/icons/tools.png"/></div>
+                </span>
+                <h2>실용적인 도구</h2>
+                <p>PRACTICAL TOOLS</p>
+                <a th:href="@{'/shop/main'+'?searchQuery='+${itemSearchDTO.searchQuery}+'&itemTypes=C'}">More... </a><i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </div>
+            <div class="v-line"></div>
+            <div class="text">
+                <span>
+                    <div class="icon"><img src="../images/icons/food.png"/></div>
+                </span>
+                <h2>따뜻한 식사</h2>
+                <p>HOT MEALS</p>
+                <a th:href="@{'/shop/main'+'?searchQuery='+${itemSearchDTO.searchQuery}+'&itemTypes=D'}">More... </a><i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 메인 레터링 + 이미지 화면-->
+<section class="conC">
+    <div class="container">
+        <h2>"캠핑은 우리가 필요로 하는 것이 아니라, 우리가 다시 발견해야 하는 것이다."</h2>
+        <p>현대인들은 여유로운 삶이 언제나 부족합니다.</p>
+        <p>숨가쁜 일상속에서 하루하루 일에 치이다 보면 삶을 되돌아볼 시간도 부족합니다.</p>
+        <h3>여러분들의 삶의 여유가 왔을때 곁에 있어줄 친구를 만나는 시간</h3>
+        <h1>CAMPING MALL</h1>
+    </div>
+</section>
+
+
+<!-- 푸터 -->
+<section class="conD">
+    <footer class="container">
+        <div class="container">
+            <div class="footA">
+                <h2>CAMPIGN MALL</h2>
+                <p>부산광역시 부산진구 신천대로50번길 79 로컬빌딩 5층</p>
+                <a href="/">https://ko.campingmall.com/</a>
+                <nav class="footD">
+                    <ul>
+                        <li><a href="#"><span><i class="fa fa-twitter icon" aria-hidden="true"></i></span></a></li>
+                        <li><a href="#"><span><i class="fa fa-facebook-square icon" aria-hidden="true"></i></span></a></li>
+                        <li><a href="#"><span><i class="fa fa-google-plus icon" aria-hidden="true"></i></span></a></li>
+                        <li><a href="#"><span><i class="fa fa-instagram icon" aria-hidden="true"></i></span></a></li>
+                        <li><a href="#"><span><i class="fa fa-youtube icon" aria-hidden="true"></i></span></a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="footB">
+                <div>
+                    <h3>ABOUT</h3>
+                    <ul>
+                        <li><a href="#">Foundation</a></li>
+                        <li><a href="#">Address</a></li>
+                        <li><a href="#">Map</a></li>
+                        <li><a href="#">Staff</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>SUPPORT</h3>
+                    <ul>
+                        <li><a href="#">Download</a></li>
+                        <li><a href="#">Menual</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Question</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>CONTENTS</h3>
+                    <ul>
+                        <li><a href="#">Announcement</a></li>
+                        <li><a href="#">Bussiness</a></li>
+                        <li><a href="#">Profile</a></li>
+                        <li><a href="#">Developer</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footC">
+                &COPY; <span class="log">CAMPING MALL</span> corp. All right reserved.
+            </div>
+        </div>
+    </footer>
+</section>
+</div>
+</body>
+</html>

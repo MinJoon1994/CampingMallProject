@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+
+<div th:fragment="navbar">
+    <nav class="d-flex justify-content-between nav">
+        <div>
+            <ul class="left-nav m-3 p-3">
+                <li><a href="/" id="CampingMall">CAMPING MALL</a></li>
+                <li><a href="/shop/main" class="navbar">SHOP</a></li>
+                <li><a href="#" class="navbar">ABOUT</a></li>
+                <li><a href="#" class="navbar">SNAPSHOT</a></li>
+                <li><button id="com_btn" class="com_btn">COMMUNITY</button>
+                    <div class="hidden" id="com_box">
+                        <div class="item">
+                            <a href="#" class="navbar">Q&A</a>
+                        </div>
+                        <div class="item">
+                            <a href="#" class="navbar">FAQ</a>
+                        </div>
+                        <div class="item">
+                            <a href="#" class="navbar">NOTICE</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <ul class="Login-nav m-3 p-3">
+                <li sec:authorize="isAuthenticated()">
+                    <a class="navbar" th:href="@{#}">[[${#authentication.principal.username}]]<span class="navbar_name">님</span></a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a class="navbar" th:href="@{/member/login}">LOGIN</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a class="navbar" th:href="@{/logout}">LOGOUT</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/admin/item/new"  class="navbar" >REGISTER</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="#"  class="navbar">ACCOUNT</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/cart"  class="navbar">CART</a>
+                </li>
+                <li>
+                    <button id="search-btn" class="navbar">SEARCH</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,116 @@
+/* 네비게이션바 스타일*/
+div a{
+    text-decoration:none;
+    margin:0 !important;
+    padding:0 !important;
+}
+
+.nav{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    font-size: 20px;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.nav ul li a{
+    color: black;
+}
+
+.nav ul li a.active{
+    color: black;
+}
+
+.Login-nav li{
+    float: left;
+    margin-left: 10px;
+
+}
+
+#CampingMall {
+    font-size: 22px;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.navbar{
+    margin:0;
+    padding:0;
+    margin-right:5px;
+    font-size: 20px;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.navbar_name{
+    margin:0;
+    padding:0:
+    font-family: "Gowun Batang", serif;
+    font-weight: 700;
+   font-style: normal;
+}
+
+.Login-nav button{
+    border: none;
+    background: rgba(0,0,0,0);
+    font-size: 20px;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/*네비게이션 커뮤니티*/
+
+#com_box{
+    transition: opacity 1s ;
+}
+
+#com_box.hidden {
+    opacity: 0; /* 처음에는 투명 */
+}
+
+.com_box.visible {
+    opacity: 1; /* 불투명하게 변경 */
+}
+
+.nav .left-nav .hidden .item a{
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+    display: block;
+}
+
+.nav .left-nav .visible .item a{
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+    display: block;
+}
+
+.left-nav button{
+    color:black;
+    border: none;
+    background: rgba(0,0,0,0);
+    font-size: 20px;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.left-nav button.active{
+    color: black;
+}
+
+/*768px 이하 네비바 변경*/
+@media screen and (max-width:768px){
+    .Login-nav li{
+        float: none;
+    }
+
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+
+<!-- Search 오버레이 -->
+<div th:fragment="search">
+    <form th:action="@{'/shop/main'}" method="get" th:object="${itemSearchDTO}">
+        <div class="search-overlay" id="search-overlay">
+            <div class="search-container">
+                <input type="text" th:field="*{searchQuery}" placeholder="검색어를 입력하세요" class="search-input">
+                <button class="search_submit_btn" type="submit"></button>
+                <button class="close-btn" id="close-btn">CLOSE</button>
+            </div>
+        </div>
+    </form>
+</div>
