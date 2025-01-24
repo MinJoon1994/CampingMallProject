@@ -6,13 +6,16 @@ import com.campingmall.myproject.item.repository.ItemImgRepository;
 import com.campingmall.myproject.item.repository.ItemRepository;
 import com.campingmall.myproject.member.entity.Member;
 import com.campingmall.myproject.member.repository.MemberRepository;
+import com.campingmall.myproject.order.dto.OrderAddressDTO;
 import com.campingmall.myproject.order.dto.OrderDTO;
 import com.campingmall.myproject.order.dto.OrderHistoryDTO;
 import com.campingmall.myproject.order.dto.OrderItemDTO;
 import com.campingmall.myproject.order.entity.Order;
+import com.campingmall.myproject.order.entity.OrderAddress;
 import com.campingmall.myproject.order.entity.OrderItem;
 import com.campingmall.myproject.order.repository.OrderRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +57,10 @@ public class OrderServiceImpl implements OrderService{
 
         orderItemList.add(orderItem);
 
-        Order order = Order.createOrder(member,orderItemList);
-        orderRepository.save(order);
+        //Order order = Order.createOrder(member,orderItemList,orderAddress);
+        //orderRepository.save(order);
 
-        return order.getId();
+        return null;
     }
 
     //2. 주문 이력(주문 상품 목록) 서비스
@@ -95,19 +99,74 @@ public class OrderServiceImpl implements OrderService{
         //페이지 구현 객체 생성
         return new PageImpl<>(orderHistoryDTOList,pageable,totalCount);
     }
-
+    
+    //3. 주문 취소시 : 로그인 한 사용자와 주문 데이터를 생성한 사용자가 같은지 검사
     @Override
+    @Transactional(readOnly = true)
     public boolean validateOrder(Long orderId, String loginId) {
-        return false;
-    }
+        //현재 로그인 회원의 이메일 정보
+        Member currentMember = memberRepository.findByLoginId(loginId);
 
+        //주문서에 등록된 회원 정보(로그인아이디) : 실제 주문한 회원 로그인 아이디
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityExistsException::new);
+
+        Member savedMember = order.getMember();
+
+        //현재 로그인한 회원 이메일과 주문서에 등록된 회원이메일 동일한지 검사
+        if(!StringUtils.equals(currentMember.getLoginId(),savedMember.getLoginId()))
+            return false;
+
+        return true; //동일한 회원이면 true 반환
+    }
+    
+    
+    //4. 주문취소시: transaction 변경 감지 기능에 의해서 트렌젝션이 끝날 때 update 쿼리 실행
+    //  : 주문 취소기능 수행 => order entity 에 주문 상태를 취소로 변경 
+    //  orderItem entity 를 통해 Item Entity 재고 수량 변경
     @Override
     public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
+        order.cancelOrder();
     }
-
+    
+    //5. 주문상품들 주문 서비스
     @Override
-    public Long orders(List<OrderDTO> orderDTOList, String loginId) {
-        return 0L;
+    public Long orders(List<OrderDTO> orderDTOList, String loginId, OrderAddressDTO orderAddressDTO) {
+
+        Member member = memberRepository.findByLoginId(loginId);
+        List<OrderItem> orderItemList = new ArrayList<>();
+
+
+
+        for(OrderDTO orderDTO: orderDTOList){
+
+
+
+            log.info(orderDTO.getItemId());
+
+            //5.1 orderDTO: 주문상품 아이디, 수량
+            Item item = itemRepository.findById(orderDTO.getItemId()).orElseThrow(EntityNotFoundException::new);
+
+            //5.2 orderDTO 값을 통해 OrderItem Entity 객체 생성
+            OrderItem orderItem = OrderItem.createOrderItem(item,orderDTO.getCount());
+
+
+
+            //5.3 생성된 orderItem Entity 를 List 구조 객체에 저장
+            orderItemList.add(orderItem);
+        }
+
+        log.info("여기까지 잘 들어 왔니?5");
+
+        //5.4 orderAddressDTo 값을 통해 OrderAddress Entity 객체 생성
+        OrderAddress orderAddress = OrderAddress.createOrderAddress(orderAddressDTO);
+
+        //5.5 주문 상품(OrderItem) Entity와 주문(Order) Entity 연관 맵핑
+        Order order = Order.createOrder(member,orderItemList,orderAddress);
+
+        orderRepository.save(order);
+
+        return order.getId();
     }
 }

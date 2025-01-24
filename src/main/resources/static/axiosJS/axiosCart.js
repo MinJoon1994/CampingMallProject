@@ -30,8 +30,8 @@ async function cancelOrderId(paramData){
 }
 
 //6. 장바구니에 담아 놓은 상품중 주문할 상품만 주문
-async function orderCartItemAxios(cartItems){
-    const response = await axios.post('/cart/orders',cartItems)
+async function orderCartItemAxios(paramData){
+    const response = await axios.post('/order/payment',paramData);
     return response;
 }
 

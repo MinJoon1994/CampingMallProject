@@ -11,6 +11,11 @@ import com.campingmall.myproject.item.entity.Item;
 import com.campingmall.myproject.item.repository.ItemRepository;
 import com.campingmall.myproject.member.entity.Member;
 import com.campingmall.myproject.member.repository.MemberRepository;
+import com.campingmall.myproject.order.dto.OrderAddressDTO;
+import com.campingmall.myproject.order.dto.OrderDTO;
+import com.campingmall.myproject.order.dto.OrderRequestDTO;
+import com.campingmall.myproject.order.entity.OrderAddress;
+import com.campingmall.myproject.order.service.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +35,7 @@ public class CartServiceImpl implements CartService{
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderService orderService;
 
     //장바구니 상품 주문하기 위한 서비스 요청
     //private final OrderService orderService;
@@ -143,12 +149,64 @@ public class CartServiceImpl implements CartService{
     //          6. 장바구니 상품 주문하기
     //---------------------------------------------------------//
     @Override
-    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId) {
-        return 0L;
+    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId, OrderRequestDTO orderRequestDTO) {
+        
+        //6.1 OrderDTO: 주문할 상품아이디, 수량 정보 담아 놓는 DTO
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+
+        //6.2 cartOrderDTOList에 있는 값 빼오기
+        for(CartOrderDTO cartOrderDTO: cartOrderDTOList){
+
+            //log.info("카트아이템 아이디 값");
+            //log.info(cartOrderDTO.getCartItemId());
+
+            //6.2-1 주문상품 아이디를 통해 주문상품 Entity 정보를 가져오기
+            CartItem cartItem = cartItemRepository.findById(cartOrderDTO.getCartItemId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            //log.info("아이디 값");
+            //log.info(cartItem.getItem().getId());
+
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setItemId(cartItem.getItem().getId());
+            orderDTO.setCount(cartItem.getCount());
+
+            orderDTOList.add(orderDTO);
+        }
+        
+        //배송지 정보
+        String recipientName = orderRequestDTO.getRecipientName(); // 주문자 이름
+        String postcode = orderRequestDTO.getPostcode();           // 우편번호 
+        String address = orderRequestDTO.getAddress();             // 주소
+        String detailAddress = orderRequestDTO.getDetailAddress(); // 상세주솧
+        String extraAddResss = orderRequestDTO.getExtraAddress();  // 추가주소
+
+        OrderAddressDTO orderAddressDTO = OrderAddressDTO.builder()
+                .recipientName(recipientName)
+                .postcode(postcode)
+                .address(address)
+                .detailAddress(detailAddress)
+                .extraAddress(extraAddResss)
+                .build();
+
+        //6.3 주문상품 서비스 요청: Order, OrderItem Entity 생성 -> DB 반영
+        Long orderId = orderService.orders(orderDTOList,loginId,orderAddressDTO);
+
+        //6.4 장바구니 주문완료되면 장바구니에 있는 상품 List 삭제
+        for(CartOrderDTO cartOrderDTO: cartOrderDTOList){
+            //6.4-1 삭제할 주문아이템 불러오기
+            CartItem cartItem = cartItemRepository.findById(cartOrderDTO.getCartItemId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            //6.4-2 불러온 주문아이템 삭제하기
+            cartItemRepository.delete(cartItem);
+        }
+
+        return orderId;
     }
 
     //---------------------------------------------------------//
-    //          6. 장바구니 비우기
+    //          8. 장바구니 비우기
     //---------------------------------------------------------//
     @Override
     public Long deleteAllCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId) {

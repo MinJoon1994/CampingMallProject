@@ -1,5 +1,6 @@
 package com.campingmall.myproject.order.service;
 
+import com.campingmall.myproject.order.dto.OrderAddressDTO;
 import com.campingmall.myproject.order.dto.OrderDTO;
 import com.campingmall.myproject.order.dto.OrderHistoryDTO;
 import org.springframework.data.domain.Page;
@@ -22,5 +23,5 @@ public interface OrderService {
     public void cancelOrder(Long orderId);
 
     //5. 장바구니에 담겨 있는 주문상품 주문 서비스
-    public Long orders(List<OrderDTO> orderDTOList, String loginId);
+    public Long orders(List<OrderDTO> orderDTOList, String loginId, OrderAddressDTO orderAddressDTO);
 }

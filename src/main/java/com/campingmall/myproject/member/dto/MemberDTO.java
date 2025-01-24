@@ -1,5 +1,6 @@
 package com.campingmall.myproject.member.dto;
 
+import com.campingmall.myproject.member.entity.MemberAddress;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class MemberDTO {
     private String email;
     @NotBlank(message = "기본주소는 반드시 입력해야 합니다.")
     private String defaultAddress;
-    private String addresses;
+    private List<MemberAddress> addresses;
     private String socialId;
     private List<String> linkedService;
 

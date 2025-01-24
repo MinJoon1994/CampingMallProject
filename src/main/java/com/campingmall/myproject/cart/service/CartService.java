@@ -3,6 +3,7 @@ package com.campingmall.myproject.cart.service;
 import com.campingmall.myproject.cart.dto.CartDetailDTO;
 import com.campingmall.myproject.cart.dto.CartItemDTO;
 import com.campingmall.myproject.cart.dto.CartOrderDTO;
+import com.campingmall.myproject.order.dto.OrderRequestDTO;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface CartService {
     public void deleteCartItem(Long cartItemId);
 
     //6. 장바구니 상품 주문하기
-    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId);
+    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId, OrderRequestDTO orderRequestDTO);
 
     //7. 장바구니 비우기
     public Long deleteAllCartItem(List<CartOrderDTO> cartOrderDTOList, String loginId);

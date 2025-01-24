@@ -26,4 +26,16 @@ public interface CartItemRepository extends JpaRepository<CartItem,Long> {
                 ci.regTime desc
             """)
     List<CartDetailDTO> findCartDetailDtoList(@Param("cartId") Long cartId);
+
+    @Query("""
+            select new com.campingmall.myproject.cart.dto.CartDetailDTO(ci.id, i.itemNm, i.price, ci.count, im.imgUrl)
+            from
+                CartItem ci, ItemImg im
+            join ci.item i
+            where
+                ci.id = :cartItemId and im.item.id = ci.item.id and im.repImgYn = 'Y'
+            order by
+                ci.regTime desc
+            """)
+    List<CartDetailDTO> findCartItemDetailDTO(@Param("cartItemId") Long cartItemId);
 }

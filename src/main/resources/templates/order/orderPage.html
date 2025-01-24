@@ -4,17 +4,416 @@
       layout:decorate="~{layouts/base}">
 
 <div layout:fragment="content">
-    <div>
+    <div class="container w-50 form_wrap mx-auto">
+        <h1 class="order_title text-center"><strong>주문/결제</strong></h1>
+        <div class="gray_line"></div>
+        <div>
+            <div class="delivery_title mt-3">
+                <h2><strong>배송지</strong></h2>
+            </div>
+            <table class="address_table mt-3">
+                <tr>
+                    <th class="table_header"><h3>받는사람 *</h3></th>
+                    <td><input class="input_address" id="recipientName"></td>
+                </tr>
+                <tr>
+                    <th class="table_header"><div><h3>주소 *</h3></div></th>
+                    <td>
+                        <ul class="address_ul">
+                            <li class="mt-3">
+                                <input type="text" class="input_postNumber" id="sample6_postcode"  placeholder="우편번호">
+                                <input type="button" class="findPostNumber_btn" onclick="sample6_execDaumPostcode()" value="우편번호 찾기">
+                            </li>
+                            <li class="mt-3">
+                                <input type="text" class="input_address" id="sample6_address" placeholder="주소">
+                            </li>
+                            <li class="mt-3">
+                                <input type="text" class="input_address" id="sample6_detailAddress" placeholder="상세주소">
+                            </li>
+                            <li class="mt-3">
+                                <input type="text" class="input_address" id="sample6_extraAddress" placeholder="참고항목">
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="gray_line"></div>
+        <div>
+            <div class="delivery_title">
+                <h2><strong>주문상품</strong></h2>
+            </div>
+            <table class="mt-3">
+                <thead>
+                <colgroup>
+                    <col width="25%">
+                    <col width="60%">
+                    <col width="15%">
+                </colgroup>
+                </thead>
+                <tbody>
+
+                <tr class="cart_item_list" th:each="cartItem : ${cartItems}">
+                    <input type="hidden" name="cartChkBox" th:value="${cartItem.cartItemId}"/>
+                    <td><img class="img-thumbnail" th:src="${cartItem.imgUrl}" th:alt="${cartItem.itemNm}"></td>
+                    <td>
+                        <div>
+                            [[${cartItem.itemNm}]]
+                        </div>
+                        <div class="hidden-box" th:id="'price_'+${cartItem.cartItemId}"
+                             th:data-price="${cartItem.price}"></div>
+                        <div>
+                        <div th:id="'totalPrice_'+${cartItem.cartItemId}"
+                                 name="totalPrice" th:text="${#numbers.formatInteger((cartItem.count*cartItem.price),0,'COMMA')+'원'}"></div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-1">
+                            <div class="count_input"
+                                   th:text="'수량: '+${cartItem.count}+'개'"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gray_line"></div>
+
+        <div class="delivery_title mb-1">
+            <h2><strong>결제정보</strong></h2>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <div>
+                <h5>주문상품 금액:</h5>
+            </div>
+            <div>
+                <h5><span class="" id="orderTotalPrice">0</span> 원</h5>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <div>
+                <h5>배송비:</h5>
+            </div>
+            <div>
+                <h5><span>5000</span> 원</h5>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <div>
+                <h3><strong>총 결제 금액:</strong></h3>
+            </div>
+            <div>
+                <h3><strong><span class="" id="AllTotalPrice">0</span> 원</strong></h3>
+            </div>
+        </div>
+
+        <div class="gray_line"></div>
+
+        <div class="delivery_title mb-1">
+            <h2><strong>결제 수단</strong></h2>
+        </div>
+        <div class="mt-5 mb-5">
+            결제 수단이 들어갈 공간 나중에 API 긁어 올것
+        </div>
+        <div class="gray_line"></div>
+        <div class="payment_btn_box">
+            <button type="button" class="order_payment_btn" onclick="orderJS()">
+                <span id="paymentPrice">0</span> 원 결제하기
+            </button>
+        </div>
 
     </div>
+
+    <!-- Axios: 비동기 처리 라이브러리 -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- 정적리소스 static:폴더 기준 -->
+    <script th:src="@{/axiosJS/axiosCart.js}"></script>
 </div>
 
 <!-- 현재 페이지에서만 사용하는 CSS정의 -->
 <style layout:fragment="mystyle"  th:inline="css">
+    *{pointer-events: none;}
+    a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+    p{pointer-events: auto;}
+    input{pointer-events: auto;}
+    img{pointer-events: auto;}
+    table{pointer-events: auto; width:100%;}
+    select{pointer-events: auto;}
+    option{pointer-events: auto;}
+    scroll{pointer-events: auto;}
+    button{pointer-events: auto;}
+    span{pointer-events: auto;}
+    .form_wrap{
+        margin-top:150px;
+    }
 
+    .order_title{
+        width:100%
+        height:50px;
+    }
+
+    .delivery_title{
+        margin-top: 40px;
+    }
+
+    .input_postNumber{
+        height: 40px;
+    }
+
+    .input_address{
+        width: 100%;
+        height: 40px;
+        border: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .address_ul{
+        margin:0px;
+        padding:0px;
+    }
+
+    .address_ul li input{
+        border: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .table_header{
+        text-align:left;
+        vertical-align:top;
+    }
+
+    .table_header div{
+        margin-top: 20px;
+    }
+
+    .address_table{
+        border-spacing: 20px;
+    }
+
+    .findPostNumber_btn{
+        width:25%;
+        margin-right:10px;
+        border:1px solid black;
+        height:40px;
+        background-color:black;
+        color:white;
+    }
+
+    .findPostNumber_btn:hover{
+        background-color: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3) !important;
+        color:rgb(255,255,255);
+    }
+
+    .img-thumbnail{
+        width:150px;
+        height:150px;
+        object-fit:cover;
+        border:0px;
+    }
+
+    .count_input{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background: rgba(0,0,0,0);
+        height:23px;
+        text-align: center;
+    }
+
+    .bottom-line{
+        height:27px;
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .top-line{
+        height:27px;
+        border-top: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .gray_line{
+        margin-top:40px;
+        margin-bottom:20px;
+        display:block;
+        background: rgba(0,0,0,0.3);
+        width:100%;
+        height:5px;
+    }
+
+    .payment_btn_box{
+        margin-top: 30px;
+    }
+
+    .order_payment_btn{
+        width:100%;
+        margin-right:10px;
+        border:1px solid black;
+        height:40px;
+        background-color:black;
+        color:white;
+    }
+
+    .order_payment_btn:hover{
+        background-color: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3) !important;
+        color:rgb(255,255,255);
+    }
 </style>
 
 <!-- 현재 페이지에서만 사용하는 JS 정의 -->
 <script layout:fragment="myscript" th:inline="javascript">
     console.log("자바스크립트 연결 완료")
+
+    totalPriceJS()
+
+    function totalPriceJS(){
+        let totalPrice = 0;
+
+        const cartItems = document.querySelectorAll('.cart_item_list');
+        cartItems.forEach(item=>{
+            const priceElement = item.querySelector('.hidden-box');
+            const price = parseInt(priceElement.getAttribute('data-price'),10);
+            const countElement = item.querySelector('.count_input');
+            const count = parseInt(countElement.textContent.replace('수량: ','').replace('개',''),10)
+            totalPrice += price * count;
+        })
+
+        document.getElementById('orderTotalPrice').textContent = totalPrice.toLocaleString();
+
+        //배송비 추가한 총 결제 금액
+        let allTotalPrice = totalPrice+5000;
+        document.getElementById('AllTotalPrice').textContent = allTotalPrice.toLocaleString();
+        document.getElementById('paymentPrice').textContent = allTotalPrice.toLocaleString();
+
+    }
+
+    //주소 불러오기 함수
+    function sample6_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    // 조합된 참고항목을 해당 필드에 넣는다.
+                    document.getElementById("sample6_extraAddress").value = extraAddr;
+
+                } else {
+                    document.getElementById("sample6_extraAddress").value = '';
+                }
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('sample6_postcode').value = data.zonecode;
+                document.getElementById("sample6_address").value = addr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("sample6_detailAddress").focus();
+
+            }
+        }).open();
+    }
+
+    //---------------------------------------------------------------//
+    //            주문상품 결제 및 주문
+    //---------------------------------------------------------------//
+
+        // 주문자 정보 수집
+        const recipientName = document.getElementById('recipientName');
+        const postcode = document.getElementById('sample6_postcode');
+        const address = document.getElementById('sample6_address');
+        const detailAddress = document.getElementById('sample6_detailAddress');
+        const extraAddress = document.getElementById('sample6_extraAddress');
+
+        recipientName.addEventListener('change',function(e){
+            console.log("받는사람: ",e.target.value);
+        })
+
+        postcode.addEventListener('input',function(e){
+            console.log("우편번호: ",e.target.value);
+        })
+
+
+
+    function orderJS(){
+
+        // 주문자 정보 수집
+        const recipientName = document.getElementById('recipientName').value;
+        const postcode = document.getElementById('sample6_postcode').value;
+        const address = document.getElementById('sample6_address').value;
+        const detailAddress = document.getElementById('sample6_detailAddress').value;
+        const extraAddress = document.getElementById('sample6_extraAddress').value;
+
+        //1. 하나의 장바구니에 여러 주문상품을 담기
+        var dataList = new Array();
+        var paramData = new Object(); //JSON 구조 객체
+
+        //2. 주문상품들 그룹핑
+        let isCheckItems = document.querySelectorAll('input[name=cartChkBox]');
+
+        //3. 주문상품 데이터 통에 담기
+        for(let isCheckItem of isCheckItems){
+            let cartItemId = isCheckItem.value;
+
+            //4. 주문상품 아이디를 JSON객체에 저장
+            let data = new Object();
+            data["cartItemId"] = cartItemId;
+
+            //5. 주문 상품 배열에 담아 놓기 : 주문할 상품아이디를 배열에 저장
+            dataList.push(data)
+        }
+
+        //6.서버에 파라미터(매개변수)로 전달하기 위해 객체에 저장
+        paramData['cartOrderDTOList'] = dataList
+        paramData['recipientName'] = recipientName;
+        paramData['postcode'] = postcode;
+        paramData['address'] = address;
+        paramData['detailAddress'] = detailAddress;
+        paramData['extraAddress'] = extraAddress;
+
+        //7. JSON 구조형을 가진 문자열 형태로 전환
+        let param = JSON.stringify(paramData)
+
+        //8. 상품 주문 서버에 요청 (Axios)
+        orderCartItemAxios(paramData)
+            .then((res)=>{
+                alert("주문이 완료 되었습니다.")
+                location.href='/'
+            })
+            .catch((e)=>{
+                if(e.status=='401'){
+                    alert('로그인 후 이용해 주세요.')
+                    location.href="/member/login"
+                }else{
+                    console.log('error code: ',e.status);
+                }
+            })
+
+
+
+    }
+
 </script>

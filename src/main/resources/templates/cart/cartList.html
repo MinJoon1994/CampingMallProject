@@ -116,6 +116,7 @@
 
     <!-- 정적리소스 static:폴더 기준 -->
     <script th:src="@{/axiosJS/axiosCart.js}"></script>
+
 </div>
 
 <!-- 현재 페이지에서만 사용하는 CSS정의 -->
@@ -391,7 +392,7 @@
         const selectedItems = Array.from(document.querySelectorAll('.cartChkBox:checked')).map(checkbox=>{
             const itemId = checkbox.value;
 
-            return {itemId, count};
+            return {itemId};
         });
 
         if(selectedItems.length ===0){

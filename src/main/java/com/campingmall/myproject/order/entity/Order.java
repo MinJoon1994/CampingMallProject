@@ -33,6 +33,10 @@ public class Order extends BaseEntity {
                fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_address_id") // 명시적으로 컬럼 지정
+    private OrderAddress orderAddress;
+
     private OrderStatus orderStatus;
     private LocalDateTime orderDate;
 
@@ -47,7 +51,7 @@ public class Order extends BaseEntity {
     }
 
     //2. 주문 내역 구성: 주문 상품 목록, 주문 고객, 주문 상태
-    public static Order createOrder(Member member, List<OrderItem> orderItemList){
+    public static Order createOrder(Member member, List<OrderItem> orderItemList,OrderAddress orderAddress){
         //2.1 주문 내역
         Order order = new Order();
 
@@ -59,10 +63,13 @@ public class Order extends BaseEntity {
             order.addOrderItem(orderItem);
         }
 
-        //2.4 주문상태 정보(주문,취소)
+        //2.4 주문한 사람, 배송지 정보
+        order.setOrderAddress(orderAddress);
+
+        //2.5 주문상태 정보(주문,취소)
         order.setOrderStatus(OrderStatus.ORDER);
 
-        //2.5 주문 날짜
+        //2.6 주문 날짜
         order.setOrderDate(LocalDateTime.now());
 
         return order;
