@@ -103,7 +103,7 @@
             <!-- 장바구니 및 바로구매 버튼 -->
             <div class="d-flex sell_buttons">
                 <button class="cart_btn" type="button" onclick="addCartJS()">장바구니</button>
-                <a class="order_btn" th:href="@{#}">바로 주문하기</a>
+                <button class="order_btn" onclick="orderJS()">바로 주문하기</button>
             </div>
         </div>
     </div>
@@ -161,6 +161,7 @@
 <style layout:fragment="mystyle"  th:inline="css">
 *{pointer-events: none;}
 a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+a:hover{cursor:pointer;}
 p{pointer-events: auto;}
 input{pointer-events: auto;}
 img{pointer-events: auto;}
@@ -486,6 +487,35 @@ button{pointer-events: auto;}
                 alert('error code: '+e.response.status+'\n'+re.response.data)
             }
         });
+    }
+    //----------------------------------------------------------//
+    //              바로 주문하기
+    //----------------------------------------------------------//
+
+    function orderJS(){
+        const itemId = document.querySelector('#itemId').value;
+        const count = document.querySelector('.count_input').value;
+
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "/directorder";
+
+        //아이템 아이디
+        const inputItemId = document.createElement('input');
+        inputItemId.type="hidden";
+        inputItemId.name="itemId";
+        inputItemId.value = itemId;
+        form.appendChild(inputItemId);
+
+        //아이템 카운트
+        const inputItemCount = document.createElement('input');
+        inputItemCount.type="hidden";
+        inputItemCount.name="count";
+        inputItemCount.value = count;
+        form.appendChild(inputItemCount);
+
+        document.body.appendChild(form);
+        form.submit();
     }
 
 </script>

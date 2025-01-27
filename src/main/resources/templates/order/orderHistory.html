@@ -1,0 +1,213 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+    <div class="container w-50 mx-auto form_wrap">
+        <div class="d-flex justify-content-start mb-5">
+            <span class="title">주문 내역</span>
+        </div>
+        <hr>
+        <div>
+            <div th:each="order:${orders.getContent()}" class="order_items">
+                <div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span class="order_date" th:text="'주문일 :'+${order.orderDate}"></span>
+                        <!-- 취소전 -->
+                        <th:block
+                         th:if="${order.orderStatus==T(com.campingmall.myproject.order.constant.OrderStatus).ORDER}">
+                            <button class="cancel_order_button"
+                                    th:value="${order.orderId}"
+                                    onclick="cancelOrderJS(this.value)">
+                                주문 취소
+                            </button>
+                        </th:block>
+
+                        <!-- 취소 후 -->
+                        <th:block
+                         th:if="${order.orderStatus==T(com.campingmall.myproject.order.constant.OrderStatus).CANCEL}">
+                            <button class="cancel_order_success_button"
+                                    th:value="${order.orderId}"
+                                    disabled>
+                                취소 완료
+                            </button>
+                        </th:block>
+                    </div>
+                    <!-- 주문서 List 나열 -->
+                    <div th:each="orderItem: ${order.orderItemDTOList}">
+                        <!--주문 상품 이미지 및 주문 상품 정보 LIST-->
+                        <div>
+                            <table class="mt-3">
+                                <thead>
+                                <colgroup>
+                                    <col width="25%">
+                                    <col width="60%">
+                                    <col width="15%">
+                                </colgroup>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><img class="img-thumbnail" th:src="${orderItem.imgUrl}" th:alt="${orderItem.itemNm}"></td>
+                                    <td>
+                                        <div th:text="${orderItem.itemNm}">
+                                            상품명 들어가는 곳
+                                        </div>
+                                        <div>
+                                            <div th:text="${#numbers.formatInteger(orderItem.orderPrice,0,'COMMA')+'원'}"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-start mt-1">
+                                            <div class="count_input"
+                                                 th:text="'수량: '+${orderItem.count}+'개'"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- 주문내역 페이징 -->
+        <div>
+        <div class="mx-auto">
+            <div th:with="start=${(orders.number/maxPage)*maxPage+1}, end=${orders.totalPages==0?1:(start+(maxPage-1) < orders.totalPages ? start+(maxPage-1):orders.totalPages)}">
+                <ul class="custom_pagination d-flex justify-content-center gap-2">
+                    <!-- 이전페이지 -->
+                    <li class="custom_page_item" th:classappend="${orders.first}?'hidden'">
+                        <a class="custom_page_link" th:href="@{'/orders/'+${orders.number-1}}">Prev</a>
+                    </li>
+
+                    <!-- 페이지 번호 나열 -->
+                    <li class="custom_page_item" th:each="page:${#numbers.sequence(start,end)}"
+                        th:class="${orders.number eq page-1}? 'active':'mycursor'">
+                        <a class="custom_page_link" th:href="@{'/orders/'+${page-1}}">
+                            <h5><span>[</span>[[${page}]]<span>]</span></h5>
+                        </a>
+                    </li>
+
+                    <!-- 이전페이지 -->
+                    <li class="custom_page_item" th:classappend="${orders.last}?'hidden'">
+                        <a class="custom_page_link" th:href="@{'/orders/'+${orders.number+1}}">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+
+    </div>
+    </div>
+
+    <!-- Axios: 비동기 처리 라이브러리 -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- 정적리소스 static:폴더 기준 -->
+    <script th:src="@{/axiosJS/axiosCart.js}"></script>
+</div>
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+    *{pointer-events: none;}
+    a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+    a:hover{cursor:pointer;}
+    p{pointer-events: auto;}
+    input{pointer-events: auto;}
+    img{pointer-events: auto;}
+    table{pointer-events: auto; width:100%;}
+    select{pointer-events: auto;}
+    option{pointer-events: auto;}
+    scroll{pointer-events: auto;}
+    button{pointer-events: auto;}
+    span{pointer-events: auto;}
+
+    .form_wrap{
+        margin-top:100px;
+    }
+
+    .title{
+        font-weight: 800;
+        font-size: 25px;
+    }
+
+    .cancel_order_button{
+        width:25%;
+        margin-right:10px;
+        border:1px solid black;
+        height:40px;
+        background-color:black;
+        color:white;
+    }
+
+    .cancel_order_button:hover{
+        background-color: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3) !important;
+        color:rgb(255,255,255);
+    }
+
+    .cancel_order_success_button{
+        width:25%;
+        height:40px;
+        background-color: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3);
+        color: rgb(255,255,255);
+    }
+
+    .img-thumbnail{
+        width:150px;
+        height:150px;
+        object-fit:cover;
+        border:0px;
+    }
+
+    .count_input{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background: rgba(0,0,0,0);
+        height:23px;
+        text-align: center;
+    }
+
+    .custom_pagination{
+        display:flex;
+    }
+
+    .custom_page_item.hidden{
+        display:none;
+    }
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+    console.log("자바스크립트 연결 완료")
+
+    //--------------------------------------------------------------//
+    // 1. JavaScript
+    //--------------------------------------------------------------//
+
+    function cancelOrderJS(orderId){
+        console.log("주문 취소 아이디: "+orderId)
+
+        let paramData = {
+            orderId: orderId
+        }
+
+        //axios 함수 호출 : JSON 객체를 인자로 전달
+        cancelOrderId(paramData).then(result=>{
+            alert('주문이 취소 되었습니다.')
+            location.href("/orders")
+        }).catch((e)=>{
+            console.log('주문 취소 실패하였습니다.')
+            if(e.response.statue == '401'){
+                alert('로그인 후 이용해 주세요.')
+                location.href='/members/login'
+            }else{
+                alert('error code: '+e.response.statue+'\n'+e.responseText)
+            }
+        })
+    }
+
+</script>

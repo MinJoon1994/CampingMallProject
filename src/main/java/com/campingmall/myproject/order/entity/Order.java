@@ -50,7 +50,7 @@ public class Order extends BaseEntity {
         orderItem.setOrder(this);
     }
 
-    //2. 주문 내역 구성: 주문 상품 목록, 주문 고객, 주문 상태
+    //2.2 주문 내역 구성: 주문 상품 목록, 주문 고객, 주문 상태
     public static Order createOrder(Member member, List<OrderItem> orderItemList,OrderAddress orderAddress){
         //2.1 주문 내역
         Order order = new Order();

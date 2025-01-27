@@ -58,7 +58,7 @@
         <!-- 페이징 버튼-->
         <div class="mt-3" th:with="types=${itemSearchDTO.itemTypes != null ? itemSearchDTO.itemTypes : 'ALL'}">
             <div th:with="start=${(items.number/maxPage)*maxPage+1},
-             end=${items.totalPages==0?1:(start+(maxPage-1) <items.totalPages ? start+(maxPage-1):items.totalPages)}">
+             end=${items.totalPages==0?1:(start+(maxPage-1) < items.totalPages ? start+(maxPage-1):items.totalPages)}">
                 <div class="paging">
                     <ul class="custom_pagination d-flex justify-content-center gap-2">
                         <!-- 이전 페이지 -->
@@ -144,6 +144,8 @@
         color: black;
         pointer-events: auto;
     }
+
+    a:hover{cursor:pointer;}
 
     button{
         pointer-events: auto;

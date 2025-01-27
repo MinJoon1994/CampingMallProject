@@ -37,6 +37,12 @@ async function orderCartItemAxios(paramData){
 
 //7. 장바구니에 담아 놓은 상품중 주문할 상품 주문페이지로 보내기
 async function orderPageTransferAxios(cartItems){
-    const response = await axios.pos('/orderpage',cartItems)
+    const response = await axios.post('/orderpage',cartItems)
+    return response;
+}
+
+//8. 바로 주문하는 함수
+async function directOrder(paramData){
+    const response = await axios.post('/order/payment/direct',paramData);
     return response;
 }

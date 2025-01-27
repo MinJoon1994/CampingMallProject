@@ -1,0 +1,142 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+    <div class="container w-50 mx-auto total_form">
+
+        <div class="d-flex justify-content-start mb-5">
+            <span class="title">마이 쇼핑</span>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <span class="sub">나의 주문처리 현황</span>
+        </div>
+        <hr>
+        <div class="d-flex purchase_box">
+            <ul class="purchase_list">
+                <li class="w-25">
+                    <strong>주문전</strong>
+                    <span class="li_count">[[${cartCount}]]</span>
+                </li>
+                <li class="w-25">
+                    <strong>배송준비중</strong>
+                    <span class="li_count">[[${orderCount}]]</span>
+                </li>
+                <li class="w-25">
+                    <strong>배송중</strong>
+                    <span class="li_count">0</span>
+                </li>
+                <li class="w-25">
+                    <strong>배송완료</strong>
+                    <span class="li_count">0</span>
+                </li>
+            </ul>
+            <ul class="purchase_list2">
+                <li><strong>취소: 0</strong></li>
+                <li><strong>반품: 0</strong></li>
+                <li><strong>환불: 0</strong></li>
+            </ul>
+        </div>
+        <hr>
+
+        <div class="d-flex justify-content-between gap-2 select_box_shopping">
+            <div>
+                <a href="/orders" class="shopping_font">주문내역 조회</a>
+            </div>
+            <div>
+                <a href="/member/modify" class="shopping_font">회원정보 수정</a>
+            </div>
+            <div>
+                <a href="#" class="shopping_font">구매후기 관리</a>
+            </div>
+            <div>
+                <a href="#" class="shopping_font">배송지 관리</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+    *{pointer-events: none;}
+    a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+    a:hover{cursor:pointer;}
+    p{pointer-events: auto;}
+    input{pointer-events: auto;}
+    img{pointer-events: auto;}
+    table{pointer-events: auto; width:100%;}
+    select{pointer-events: auto;}
+    option{pointer-events: auto;}
+    scroll{pointer-events: auto;}
+    button{pointer-events: auto;}
+    span{pointer-events: auto;}
+
+    .total_form{
+        margin-top:100px;
+    }
+
+    .title{
+        font-weight: 800;
+        font-size: 25px;
+    }
+
+    purchase_box{
+        display:flex;
+        width: 100%;
+        border-top: 1px solid rgba(0,0,0,0.3);
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+        border-right: 0px;
+        border-left: 0px;
+        padding: 20px 0px;
+    }
+
+    .purchase_list{
+        width:80%;
+        display:flex;
+        padding:0;
+        margin:0;
+    }
+
+    .purchase_list li{
+
+      display: flex; /* Flexbox 활성화 */
+      justify-content: center; /* 가로 중앙 정렬 */
+      align-items: center; /* 세로 중앙 정렬 */
+    }
+
+    .li_count{
+        margin-left:10px;
+    }
+
+    .purchase_list2{
+        display: flex; /* Flexbox 활성화 */
+        flex-direction: column; /* 세로 배치 */
+        justify-content: center; /* 세로 방향 중앙 정렬 */
+        align-items: center; /* 가로 방향 중앙 정렬 */
+        width:20%;
+        padding:0;
+        margin:0;
+
+    }
+
+    .sub{
+        font-weight:800;
+    }
+
+    .shopping_font{
+        font-weight: 800;
+    }
+
+    .select_box_shopping{
+        margin-top:100px;
+        margin-bottom: 500px;
+    }
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+    console.log("자바스크립트 연결 완료")
+</script>

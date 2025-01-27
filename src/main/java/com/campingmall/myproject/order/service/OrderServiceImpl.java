@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService{
 
     //1. 상품 주문 서비스(상품 아이디, 수량, 로그인 고객: 주문 고객)
     @Override
-    public Long order(OrderDTO orderDTO, String loginId) {
+    public Long order(OrderDTO orderDTO, String loginId, OrderAddressDTO orderAddressDTO) {
 
         //1. 주문한 상품 아이디 -> 상품 정보 추출
         Item item = itemRepository.findById(orderDTO.getItemId()).orElseThrow(EntityExistsException::new);
@@ -57,10 +57,13 @@ public class OrderServiceImpl implements OrderService{
 
         orderItemList.add(orderItem);
 
-        //Order order = Order.createOrder(member,orderItemList,orderAddress);
-        //orderRepository.save(order);
+        //5. 주문 상품 주소 생성
+        OrderAddress orderAddress = OrderAddress.createOrderAddress(orderAddressDTO);
 
-        return null;
+        Order order = Order.createOrder(member,orderItemList,orderAddress);
+        orderRepository.save(order);
+
+        return order.getId();
     }
 
     //2. 주문 이력(주문 상품 목록) 서비스
@@ -99,7 +102,17 @@ public class OrderServiceImpl implements OrderService{
         //페이지 구현 객체 생성
         return new PageImpl<>(orderHistoryDTOList,pageable,totalCount);
     }
-    
+
+    @Override
+    public Long getOrderCount(String loginId) {
+
+        //2. 총 주문 개수
+        Long totalCount = orderRepository.countOrder(loginId);
+
+        return totalCount;
+    }
+
+
     //3. 주문 취소시 : 로그인 한 사용자와 주문 데이터를 생성한 사용자가 같은지 검사
     @Override
     @Transactional(readOnly = true)
