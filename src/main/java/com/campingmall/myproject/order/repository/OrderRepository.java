@@ -14,6 +14,10 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     @Query("select o from Order o where o.member.loginId = :loginId order by o.orderStatus, o.orderDate desc")
     List<Order> findOrder(@Param("loginId") String loginId, Pageable pageable);
 
+    //1-1. 현재 로그인 사용자의 주문 데이터를 페이지 조건 없이, 주문상태에 있는 주문만 조회
+    @Query("select o from Order o where o.member.loginId = :loginId and o.orderStatus = 0 order by o.orderDate desc")
+    List<Order> findOrderReview(@Param("loginId") String loginId);
+
     //2. 현재 로그인한 회원의 주문 개수가 몇 개 인지 조회
     @Query("select count(o) from Order o where o.member.loginId = :loginId")
     Long countOrder(@Param("loginId") String loginId);

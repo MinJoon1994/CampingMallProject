@@ -8,7 +8,7 @@ import lombok.ToString;
 public class DirectOrderDTO {
 
     private Long itemId;
-    private Long count;
+    private int count;
     private String recipientName;
     private String postcode;
     private String address;

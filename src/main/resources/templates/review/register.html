@@ -1,0 +1,35 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+  <div class="container w-50 form_wrap mx-auto">
+    <div></div>
+  </div>
+</div>
+
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+  *{pointer-events: none;}
+  a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+  a:hover{cursor:pointer;}
+  p{pointer-events: auto;}
+  input{pointer-events: auto;}
+  img{pointer-events: auto;}
+  table{pointer-events: auto; width:100%;}
+  select{pointer-events: auto;}
+  option{pointer-events: auto;}
+  scroll{pointer-events: auto;}
+  button{pointer-events: auto;}
+  span{pointer-events: auto;}
+
+  .form_wrap{
+      margin-top:100px;
+  }
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+  console.log("자바스크립트 연결 완료")
+</script>

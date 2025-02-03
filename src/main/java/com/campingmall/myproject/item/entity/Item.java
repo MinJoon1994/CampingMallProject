@@ -5,8 +5,11 @@ import com.campingmall.myproject.exception.OutOfStockException;
 import com.campingmall.myproject.item.constant.ItemSellStatus;
 import com.campingmall.myproject.item.constant.ItemTypes;
 import com.campingmall.myproject.item.dto.ItemFormDTO;
+import com.campingmall.myproject.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter@Setter@ToString
 @AllArgsConstructor@NoArgsConstructor@Builder
@@ -31,6 +34,9 @@ public class Item extends BaseEntity {
     private ItemTypes itemTypes;            //상품 종류
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;  //상품 판매상태
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews;           //구매 후기
 
     //--------------------------------------------------------//
     //              기능 수행하는 메서드 정의

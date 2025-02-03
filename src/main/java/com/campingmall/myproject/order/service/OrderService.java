@@ -16,6 +16,9 @@ public interface OrderService {
     //2. 주문 이력 (주문 상품 목록) 서비스
     public Page<OrderHistoryDTO> getOrderList(String loginId, Pageable pageable);
 
+    //2-1. 주문 이력(구매후기 작성을 위한) 서비스
+    public List<OrderHistoryDTO> getOrderListReview(String loginId);
+
     //3. 주문 이력 카운팅
     public Long getOrderCount(String loginId);
 

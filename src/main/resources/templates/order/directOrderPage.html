@@ -56,6 +56,7 @@
 
                 <tr class="cart_item_list">
                     <input type="hidden" name="cartChkBox" th:value="${item.id}"/>
+                    <input type="hidden" name="itemCount" th:value="${count}"/>
                     <td><img class="img-thumbnail" th:src="${item.itemImgDTOList[0].imgUrl}" th:alt="${item.itemNm}"></td>
                     <td>
                         <div>
@@ -271,11 +272,13 @@
 
         const cartItems = document.querySelector('.cart_item_list');
 
-        const priceElement = item.querySelector('.hidden-box');
+        const priceElement = document.querySelector('.hidden-box');
         const price = parseInt(priceElement.getAttribute('data-price'),10);
-        const countElement = item.querySelector('.count_input');
+        const countElement = document.querySelector('.count_input');
         const count = parseInt(countElement.textContent.replace('수량: ','').replace('개',''),10)
         totalPrice = price * count;
+
+        console.log(totalPrice);
 
         document.getElementById('orderTotalPrice').textContent = totalPrice.toLocaleString();
 
@@ -356,7 +359,6 @@
         })
 
 
-
     function orderJS(){
 
         // 주문자 정보 수집
@@ -367,23 +369,26 @@
         const extraAddress = document.getElementById('sample6_extraAddress').value;
 
         //1. 하나의 장바구니에 여러 주문상품을 담기
-        var dataList = new Array();
         var paramData = new Object(); //JSON 구조 객체
 
         //2. 주문상품 데이터 통에 담기
         let isCheckItem = document.querySelector('input[name=cartChkBox]');
-
         let itemId = isCheckItem.value;
+
+        let count = document.querySelector('input[name=itemCount]');
+        let itemCount = count.value;
+
 
         //4. 주문상품 아이디를 JSON객체에 저장
         let data = new Object();
         data["itemId"] = itemId;
+        data["count"] = itemCount;
 
         //5. 주문 상품 배열에 담아 놓기 : 주문할 상품아이디를 배열에 저장
-        dataList.push(data)
 
         //6.서버에 파라미터(매개변수)로 전달하기 위해 객체에 저장
-        paramData['cartOrderDTOList'] = dataList
+        paramData['itemId'] = itemId;
+        paramData['count'] = itemCount;
         paramData['recipientName'] = recipientName;
         paramData['postcode'] = postcode;
         paramData['address'] = address;
@@ -394,7 +399,7 @@
         let param = JSON.stringify(paramData)
 
         //8. 상품 주문 서버에 요청 (Axios)
-        orderCartItemAxios(paramData)
+        directOrder(paramData)
             .then((res)=>{
                 alert("주문이 완료 되었습니다.")
                 location.href='/'

@@ -103,6 +103,39 @@ public class OrderServiceImpl implements OrderService{
         return new PageImpl<>(orderHistoryDTOList,pageable,totalCount);
     }
 
+    //2-1 주문 이력(구매후기 리뷰를 위한) 서비스
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderHistoryDTO> getOrderListReview(String loginId) {
+
+        //1. 사용자의 아이디를 이용해 주문 목록 요청
+        List<Order> orders = orderRepository.findOrderReview(loginId);
+
+        //2. 검색하여 가져온 주문 목록을 순회하여 구매이력 페이지 전달할 List 객체 생성
+        List<OrderHistoryDTO> orderHistoryDTOList = new ArrayList<>();
+        for(Order order: orders){
+            OrderHistoryDTO orderHistoryDTO = new OrderHistoryDTO(order);
+
+            //주문서에 있는 주문 상품 Entity -> DTO 저장
+            List<OrderItem> orderItemList = order.getOrderItems();
+
+            for(OrderItem orderItem: orderItemList){
+                //1. 대표 상품 이미지: 주문상품이고 대표상품인 조건 검색(and조건)
+                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(),"Y");
+
+                //2. 주문한 상품 정보와 대표 상품이미지 Url
+                OrderItemDTO orderItemDTO = new OrderItemDTO(orderItem, itemImg.getImgUrl());
+
+                //3. 주문상품이력 List
+                orderHistoryDTO.addOrderItemDTO(orderItemDTO);
+            }
+            //주문 이력 List 에 주문 이력 저장
+            orderHistoryDTOList.add(orderHistoryDTO);
+        }
+        //주문이력 List 반환
+        return orderHistoryDTOList;
+    }
+
     @Override
     public Long getOrderCount(String loginId) {
 

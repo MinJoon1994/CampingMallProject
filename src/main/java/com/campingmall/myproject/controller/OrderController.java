@@ -11,9 +11,7 @@ import com.campingmall.myproject.item.entity.Item;
 import com.campingmall.myproject.item.repository.ItemImgRepository;
 import com.campingmall.myproject.item.repository.ItemRepository;
 import com.campingmall.myproject.item.service.ItemService;
-import com.campingmall.myproject.order.dto.DirectOrderDTO;
-import com.campingmall.myproject.order.dto.OrderHistoryDTO;
-import com.campingmall.myproject.order.dto.OrderRequestDTO;
+import com.campingmall.myproject.order.dto.*;
 import com.campingmall.myproject.order.service.OrderService;
 import com.sun.net.httpserver.HttpsServer;
 import jakarta.persistence.EntityNotFoundException;
@@ -141,11 +139,25 @@ public class OrderController {
         log.info("값 잘 넘어 왔니?");
         log.info(directOrderDTO);
 
-        //상품들 주문하기
-        //Long orderId = orderService.order(orderDTO,loginId,)
+        OrderDTO orderDTO = new OrderDTO();
 
-        //return new ResponseEntity<Long>(orderId,HttpStatus.OK);
-        return null;
+        orderDTO.setItemId(directOrderDTO.getItemId());
+        orderDTO.setCount(directOrderDTO.getCount());
+
+        OrderAddressDTO orderAddressDTO = new OrderAddressDTO();
+
+        orderAddressDTO.builder()
+                .address(directOrderDTO.getAddress())
+                .postcode(directOrderDTO.getPostcode())
+                .extraAddress(directOrderDTO.getExtraAddress())
+                .detailAddress(directOrderDTO.getDetailAddress())
+                .recipientName(directOrderDTO.getRecipientName())
+                .build();
+
+        //상품들 주문하기
+        Long orderId = orderService.order(orderDTO,loginId,orderAddressDTO);
+
+        return new ResponseEntity<Long>(orderId,HttpStatus.OK);
     }
 
     //---------------------------------------------------//
