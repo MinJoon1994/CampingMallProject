@@ -5,7 +5,95 @@
 
 <div layout:fragment="content">
   <div class="container w-50 form_wrap mx-auto">
-    <div></div>
+    <div class="d-flex justify-content-start mb-3">
+      <span class="title"><strong>상품 후기</strong></span>
+    </div>
+
+    <hr>
+
+    <h5 class="mt-3"><strong>주문 선택</strong></h5>
+
+    <!-- 주문 선택 -->
+    <select class="mt-3" id="orderSelect" onchange="updateItemDisplay()">
+      <option value="">주문을 선택하세요</option>
+      <option th:each="order : ${orders}" th:value="${order.orderId}"
+              th:text="${order.orderItemDTOList[0].itemNm} + ' (' + ${order.orderDate} + ')'">
+      </option>
+    </select>
+
+    <h5 class="mt-3"><strong>아이템 선택</strong></h5>
+
+    <!-- 선택한 아이템을 저장할 Hidden Input -->
+    <form method="POST">
+
+      <!-- 후기남길 아이템 아이디 -->
+      <input type="hidden" name="itemId" id="selectedItemId">
+
+      <!-- 주문별 아이템 리스트 (가로 정렬) -->
+      <div th:each="order : ${orders}"
+           th:id="'itemContainer_' + ${order.orderId}"
+           class="item-container">
+
+        <div th:each="item : ${order.orderItemDTOList}"
+             th:id="'item_' + ${order.orderId} + '_' + ${item.itemId}"
+             class="item-box"
+             th:onclick="'selectItem(' + ${order.orderId} + ',' + ${item.itemId} + ')'">
+
+          <!-- 아이템 이미지 -->
+          <img class="item_img_thumbnail" th:src="${item.imgUrl}" th:alt="${item.itemNm}">
+
+          <!-- 아이템 정보 -->
+          <p th:text="${item.itemNm}"></p>
+          <p th:text="'₩' + ${item.orderPrice}"></p>
+          <p th:text="'수량: ' + ${item.count}"></p>
+        </div>
+
+      </div>
+
+      <hr>
+
+      <!-- 후기 제목 -->
+      <div class="mt-3 mb-3">
+        <h5><strong>후기 제목</strong></h5>
+        <input type="text" class="review_title" name="title" id="title" size="50" placeholder="후기 제목">
+      </div>
+
+
+      <div class="d-flex justify-content-between mt-3 mb-3">
+        <!-- 별점 -->
+        <div class="d-flex gap-3">
+          <div class="d-flex justify-content-start star_title">
+            <h5><strong>별점</strong></h5>
+          </div>
+          <div class="star-container">
+            <span class="star" onmouseover="highlightStars(1)" onmouseout="resetStars()" onclick="selectStars(1)">★</span>
+            <span class="star" onmouseover="highlightStars(2)" onmouseout="resetStars()" onclick="selectStars(2)">★</span>
+            <span class="star" onmouseover="highlightStars(3)" onmouseout="resetStars()" onclick="selectStars(3)">★</span>
+            <span class="star" onmouseover="highlightStars(4)" onmouseout="resetStars()" onclick="selectStars(4)">★</span>
+            <span class="star" onmouseover="highlightStars(5)" onmouseout="resetStars()" onclick="selectStars(5)">★</span>
+            <input type="hidden" name="star" id="selectedRating">
+          </div>
+        </div>
+        <!-- 작성자 -->
+        <div class="d-flex gap-3">
+          <div class="d-flex justify-content-start star_title">
+            <h5><strong>작성자</strong></h5>
+          </div>
+          <div class="author_input">
+            [[${#authentication.principal.username}]]
+          </div>
+          <input type="hidden" name="author" id="author" th:value="${#authentication.principal.username}">
+        </div>
+      </div>
+
+      <!-- 후기 내용 -->
+      <div class="mt-3 mb-3">
+        <h5><strong>후기 내용</strong></h5>
+        <textarea class="review_content" name="content" id="content"></textarea>
+      </div>
+
+    </form>
+
   </div>
 </div>
 
@@ -23,13 +111,161 @@
   scroll{pointer-events: auto;}
   button{pointer-events: auto;}
   span{pointer-events: auto;}
+  textarea{pointer-events: auto;}
 
   .form_wrap{
       margin-top:100px;
+  }
+
+  .item-container {
+      display: none; /* 기본적으로 숨김 */
+      gap: 15px; /* 아이템 간격 */
+      margin-top: 20px;
+  }
+
+  .item-box {
+      cursor: pointer;
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      height: 100%;
+  }
+
+  .item-box:hover {
+      border: 2px solid black;
+  }
+
+  .item-box img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 5px;
+  }
+
+  .item_img_thumbnail{
+
+  }
+
+  .item-box p {
+      margin: 0;
+      font-size: 14px;
+  }
+
+  .title{
+        font-weight: 800;
+        font-size: 25px;
+  }
+
+  .star-container {
+      display: flex;
+      font-size: 40px;
+      cursor: pointer;
+  }
+
+  .star {
+      color: lightgray;
+      transition: color 0.3s ease;
+  }
+
+  .star.filled {
+      color: gold;
+  }
+
+  .star_title{
+    display:flex;
+    align-items: center;
+  }
+
+  .star_title h5{
+    margin: 0;
+  }
+
+  .review_title{
+    width:100%;
+    height:40px;
+  }
+
+  .review_content{
+    width:100%;
+    height:200px;
+  }
+
+  .author_input{
+      display: flex;
+      font-size: 25px;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
   }
 </style>
 
 <!-- 현재 페이지에서만 사용하는 JS 정의 -->
 <script layout:fragment="myscript" th:inline="javascript">
   console.log("자바스크립트 연결 완료")
+
+  function updateItemDisplay() {
+      let orderSelect = document.getElementById("orderSelect");
+      let selectedOrderId = orderSelect.value;
+
+      // 모든 아이템 리스트 숨기기
+      let itemContainers = document.getElementsByClassName("item-container");
+      for (let container of itemContainers) {
+          container.style.display = "none";
+      }
+
+      // 해당 주문의 아이템 리스트 보이기
+      if (selectedOrderId) {
+          let selectedItemContainer = document.getElementById("itemContainer_" + selectedOrderId);
+          if (selectedItemContainer) {
+              selectedItemContainer.style.display = "flex"; // flex로 가로 정렬
+          }
+      }
+  }
+
+  function selectItem(orderId, itemId) {
+      // 선택한 아이템의 ID를 숨겨진 input에 저장 (POST 요청용)
+      document.getElementById("selectedItemId").value = itemId;
+
+      // 모든 아이템의 선택 효과 제거
+      let items = document.getElementsByClassName("item-box");
+      for (let item of items) {
+          item.style.border = "2px solid transparent";
+      }
+
+      // 현재 주문(orderId)에서 선택한 아이템(itemId)만 테두리 강조
+      let selectedItem = document.getElementById("item_" + orderId + "_" + itemId);
+      if (selectedItem) {
+          selectedItem.style.border = "2px solid black";
+      }
+  }
+
+  let selectedRating = 0; // 현재 선택된 별점 값 (고정 값)
+
+  function highlightStars(starCount) {
+      let stars = document.getElementsByClassName("star");
+      for (let i = 0; i < stars.length; i++) {
+          if (i < starCount) {
+              stars[i].classList.add("filled"); // 해당 별까지 채움
+          } else {
+              stars[i].classList.remove("filled"); // 이후 별들은 비움
+          }
+      }
+  }
+
+  function selectStars(starCount) {
+      selectedRating = starCount; // 선택된 별점 고정
+      document.querySelector("#selectedRating").value = starCount; // 숨겨진 input에 값 저장
+  }
+
+  function resetStars() {
+      highlightStars(selectedRating); // 선택된 별점으로 되돌림
+  }
+
+
 </script>

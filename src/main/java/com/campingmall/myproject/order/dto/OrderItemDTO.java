@@ -12,6 +12,7 @@ public class OrderItemDTO {
     private int count;      //상품 수량
     private int orderPrice; //주문 금액
     private String imgUrl;  //상품 이미지 경로
+    private Long itemId;
 
     //생성자
     public OrderItemDTO(OrderItem orderItem, String imgUrl){
@@ -19,5 +20,6 @@ public class OrderItemDTO {
         this.count  = orderItem.getCount();
         this.orderPrice = orderItem.getOrderPrice();
         this.imgUrl = imgUrl;
+        this.itemId = orderItem.getItem().getId();
     }
 }
