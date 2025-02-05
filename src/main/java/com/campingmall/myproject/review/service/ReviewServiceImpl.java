@@ -1,6 +1,7 @@
 package com.campingmall.myproject.review.service;
 
 import com.campingmall.myproject.review.dto.ReviewDTO;
+import com.campingmall.myproject.review.dto.ReviewFormDTO;
 import com.campingmall.myproject.review.entity.Review;
 import com.campingmall.myproject.review.entity.ReviewImg;
 import com.campingmall.myproject.review.repository.ReviewRepository;
@@ -36,11 +37,17 @@ public class ReviewServiceImpl implements ReviewService{
 
     // 1. Review 생성
     @Override
-    public Long register(ReviewDTO reviewDTO, List<MultipartFile> reviewImgFiles) throws Exception {
+    public Long register(ReviewFormDTO reviewFormDTODTO, List<MultipartFile> reviewImgFiles) throws Exception {
+
+        log.info("리뷰 생성을 위해 들어온 값 확인");
+        log.info(reviewFormDTODTO);
+        log.info(reviewImgFiles);
 
         //1.1 리뷰 정보 등록
-        Review review = modelMapper.map(reviewDTO, Review.class);
-        Long rno = reviewRepository.save(review).getRno();
+        Review review = reviewFormDTODTO.createReview();
+        reviewRepository.save(review);
+
+        log.info("저장완료");
 
         //1.2 리뷰 이미지 등록
         for(int i=0; i<reviewImgFiles.size(); i++){
@@ -56,7 +63,7 @@ public class ReviewServiceImpl implements ReviewService{
             reviewImgService.savedReviewImg(reviewImg,reviewImgFiles.get(i));
         }
 
-        return rno;
+        return review.getId();
     }
 
 
@@ -79,14 +86,14 @@ public class ReviewServiceImpl implements ReviewService{
     public Long modify(ReviewDTO reviewDTO) {
 
         //3-1. 수정할 Review 번호 읽기
-        Optional<Review> result = reviewRepository.findById(reviewDTO.getRno());
+        Optional<Review> result = reviewRepository.findById(reviewDTO.getId());
         //3-2. Entity 값 읽기
         Review review = result.orElseThrow();
         //3-3. entity 값 수정 : dto 값을 entity 에 저장
         review.change(reviewDTO.getTitle(),reviewDTO.getContent(),reviewDTO.getStar());
 
         //3-4. 수정된 Entity -> DB에 반영
-        Long rno = reviewRepository.save(review).getRno();
+        Long rno = reviewRepository.save(review).getId();
 
         return rno;
     }

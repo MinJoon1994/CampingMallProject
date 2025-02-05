@@ -21,7 +21,7 @@ public class ReviewImg extends BaseEntity {
     // 연관관계 설정: 다른 테이블과 조인
     // 1개의 상품 엔티티에는 여러개의 상품 이미지 엔티티와 연결
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="review_rno")
+    @JoinColumn(name="review_id")
     private Review review;
     
     //업데이트 처리하는 메서드(원본이미지 파일명, 이미지 파일명, 이미지 경로)

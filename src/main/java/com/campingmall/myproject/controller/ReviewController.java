@@ -1,9 +1,11 @@
 package com.campingmall.myproject.controller;
 
+import com.campingmall.myproject.item.dto.ItemFormDTO;
 import com.campingmall.myproject.item.dto.ItemSearchDTO;
 import com.campingmall.myproject.order.dto.OrderHistoryDTO;
 import com.campingmall.myproject.order.service.OrderService;
 import com.campingmall.myproject.review.dto.ReviewDTO;
+import com.campingmall.myproject.review.dto.ReviewFormDTO;
 import com.campingmall.myproject.review.service.ReviewService;
 import com.campingmall.myproject.search.dto.PageRequestDTO;
 import com.campingmall.myproject.search.dto.PageResponseDTO;
@@ -61,7 +63,7 @@ public class ReviewController {
 
         //현재 로그인한 회원의 로그인 아이디를 인자로 전달하여 구매이력 조회
         List<OrderHistoryDTO> orderHistoryDTOList = orderService.getOrderListReview(principal.getName());
-
+        model.addAttribute("reviewFormDTO",new ReviewFormDTO());
         model.addAttribute("orders",orderHistoryDTOList);
         model.addAttribute("itemSearchDTO", itemSearchDTO);
 
@@ -72,13 +74,20 @@ public class ReviewController {
     //현재 로그인 사용자 계정(loginId)과 게시글 작성자 loginId가 동일한지 판별
     @PreAuthorize("principal.username == #reviewDTO.author")
     @PostMapping(value = "/register")
-    public String registerPost(@Valid ReviewDTO reviewDTO,
+    public String registerPost(@Valid ReviewFormDTO reviewFormDTO,
                                BindingResult bindingResult,
                                @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFileList,
                                //redirect 방식 요청시 : 정보관리 객체로 1회용
                                RedirectAttributes redirectAttributes){
         log.info("에러발생 ============================");
         log.info(bindingResult.hasErrors());
+
+        log.info("================ reviewFormDTO ==================");
+        log.info(reviewFormDTO);
+        for (MultipartFile file : reviewImgFileList) {
+            log.info("파일 이름: {}", file.getOriginalFilename());
+        }
+
 
         //클라이언트로 부터 전송받은 ReviewDTO 문제가 발생했을 경우
         if(bindingResult.hasErrors()){
@@ -87,9 +96,11 @@ public class ReviewController {
             return "redirect:/review/register";
         }
 
+
+
         //리뷰 등록 서비스 호출
         try {
-            Long rno = reviewService.register(reviewDTO, reviewImgFileList);
+            Long rno = reviewService.register(reviewFormDTO, reviewImgFileList);
             redirectAttributes.addFlashAttribute("result","리뷰가 등록되었습니다.");
             redirectAttributes.addFlashAttribute("rno",rno);
         }catch (Exception e){

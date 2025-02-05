@@ -68,7 +68,7 @@
                 </select>
                 <div th:if="${#lists.isEmpty(itemFormDTO.itemImgDTOList)}">
                     <div class="mt-1" th:each="num : ${#numbers.sequence(1,3)}">
-                        <label class="img_label" name="itemImfFile" th:for="itemImgFile_+${num}"
+                        <label class="img_label" name="itemImgFile" th:for="itemImgFile_+${num}"
                                th:text="상품이미지+${num}"></label>
                         <div class="d-flex gap-2">
                             <div th:class="custom_file" th:id="custom_file_+${num}">

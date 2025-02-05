@@ -11,15 +11,13 @@ import lombok.*;
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long rno;               //리뷰 ID
+    private Long id;               //리뷰 ID
     @Column(length = 100, nullable = false)
     private String title;           //리뷰 제목
     @Column(length = 500, nullable = false)
     private String content;         //리뷰 내용
     @Column(length = 50, nullable = false)
     private String author;          //리뷰 작성자
-
-    private String loginId;         //작성자 로그인 아이디
 
     @Column(nullable = false)
     private int star;               //별점

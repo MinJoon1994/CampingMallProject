@@ -1,6 +1,7 @@
 package com.campingmall.myproject.review.service;
 
 import com.campingmall.myproject.review.dto.ReviewDTO;
+import com.campingmall.myproject.review.dto.ReviewFormDTO;
 import com.campingmall.myproject.search.dto.PageRequestDTO;
 import com.campingmall.myproject.search.dto.PageResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface ReviewService{
 
     //1. Review 등록 인터페이스
-    Long register(ReviewDTO reviewDTO, List<MultipartFile> reviewImgFiles) throws Exception;
+    Long register(ReviewFormDTO reviewDTO, List<MultipartFile> reviewImgFiles) throws Exception;
 
     //2. Review 조회 인터페이스
     ReviewDTO readOne(Long rno);

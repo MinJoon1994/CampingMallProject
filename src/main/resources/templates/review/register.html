@@ -23,11 +23,11 @@
 
     <h5 class="mt-3"><strong>아이템 선택</strong></h5>
 
-    <!-- 선택한 아이템을 저장할 Hidden Input -->
-    <form method="POST">
-
+    <form method="POST" th:object="${reviewFormDTO}" enctype="multipart/form-data">
+      <!-- 리뷰Id는 직접입력 제외 -->
+      <input type="hidden" th:field="*{id}"/>
       <!-- 후기남길 아이템 아이디 -->
-      <input type="hidden" name="itemId" id="selectedItemId">
+      <input type="hidden" th:field="*{itemId}" name="itemId" id="selectedItemId">
 
       <!-- 주문별 아이템 리스트 (가로 정렬) -->
       <div th:each="order : ${orders}"
@@ -55,7 +55,7 @@
       <!-- 후기 제목 -->
       <div class="mt-3 mb-3">
         <h5><strong>후기 제목</strong></h5>
-        <input type="text" class="review_title" name="title" id="title" size="50" placeholder="후기 제목">
+        <input type="text" class="review_title" th:field="*{title}" name="title" id="title" size="50" placeholder="후기 제목">
       </div>
 
 
@@ -71,7 +71,7 @@
             <span class="star" onmouseover="highlightStars(3)" onmouseout="resetStars()" onclick="selectStars(3)">★</span>
             <span class="star" onmouseover="highlightStars(4)" onmouseout="resetStars()" onclick="selectStars(4)">★</span>
             <span class="star" onmouseover="highlightStars(5)" onmouseout="resetStars()" onclick="selectStars(5)">★</span>
-            <input type="hidden" name="star" id="selectedRating">
+            <input type="hidden" th:field="*{star}" name="star" id="selectedRating">
           </div>
         </div>
         <!-- 작성자 -->
@@ -89,7 +89,41 @@
       <!-- 후기 내용 -->
       <div class="mt-3 mb-3">
         <h5><strong>후기 내용</strong></h5>
-        <textarea class="review_content" name="content" id="content"></textarea>
+        <textarea class="review_content" th:field="*{content}" name="content" id="content"></textarea>
+      </div>
+
+      <hr>
+
+      <!-- 리뷰 이미지 파일 업로더 -->
+      <div class="d-flex justify-content-between mt-5">
+        <div class="w-50" th:if="${#lists.isEmpty(reviewFormDTO.reviewImgDTOList)}">
+          <div class="mt-1" th:each="num : ${#numbers.sequence(1,3)}">
+            <label class="img_label" name="reviewImgFile" th:for="itemImgFile_+${num}"
+              th:text="리뷰이미지+${num}"></label>
+            <div class="d-flex gap-2">
+              <button type="button" th:class="custom_file" th:id="custom_file_+${num}">
+                파일선택
+                <input type="file" th:class="file_input" th:id="reviewImgFile_+${num}" name="reviewImgFile"/>
+              </button>
+              <div th:class="file_name" th:id="fileName_+${num}">선택된 파일 없음</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 이미지 preview -->
+        <div class="Main_image w-50">
+          <div class="p-3">등록하실 이미지</div>
+          <img id="preview" th:src="@{#}" alt="이미지 준비중" onerror="this.src='../../images/이미지준비중.jpg'; this.classList.add('error-image')"/>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center gap-2 mt-5">
+        <div>
+          <button type="submit" class="savedBtn" th:formaction="@{/review/register}">등록</button>
+        </div>
+        <div>
+          <button type="button" class="cancelBtn" th:href="@{/myshop}">취소</button>
+        </div>
       </div>
 
     </form>
@@ -112,6 +146,7 @@
   button{pointer-events: auto;}
   span{pointer-events: auto;}
   textarea{pointer-events: auto;}
+  text{pointer-events: auto;}
 
   .form_wrap{
       margin-top:100px;
@@ -203,6 +238,86 @@
       align-items: center;
       cursor: pointer;
   }
+
+   .custom_file {
+    display:flex;
+    line-height:40px;
+    justify-content:center;
+    width: 100px;
+    height: 42.8px;
+    cursor: pointer;
+    background-color: rgba(0,0,0,0);
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 1px solid black;
+  }
+
+  .custom_file:hover {
+    color:white;
+    background-color: rgba(0,0,0,0.7);
+  }
+
+  .custom_file input[type="file"] {
+    display:block;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 0%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .file_name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .savedBtn{
+    cursor: pointer;
+    margin-top:10px;
+    margin-right:5px;
+    border: 0px;
+    width:80px;
+    height:40px;
+    background-color: black;
+    color:white;
+  }
+
+  .savedBtn:hover{
+    background-color: rgba(0,0,0,0.3);
+    color:rgb(255,255,255);
+  }
+
+  .cancelBtn{
+    cursor: pointer;
+    background-color: rgba(0,0,0,0);
+    margin-top:10px;
+    border: 1px solid;
+    width:80px;
+    height:40px;
+  }
+
+  .cancelBtn:hover{
+    background-color: rgba(0,0,0,0.8);
+    color:rgb(255,255,255);
+  }
+
+  .Main_image{
+    padding:10px;
+    display:column;
+    justify-content:center;
+    align-items:center;
+  }
+
+  #preview{
+    margin-right:10px;
+    width: 300px;
+    height:250px;
+    object-fit: contain;
+  }
 </style>
 
 <!-- 현재 페이지에서만 사용하는 JS 정의 -->
@@ -267,5 +382,77 @@
       highlightStars(selectedRating); // 선택된 별점으로 되돌림
   }
 
+//  const formObj = document.querySelector('form');
+
+//  document.querySelector('.savedBtn').addEventListener('click',function(e){
+//    e.preventDefault()
+//    e.stopPropagation()
+
+    //유효성 검사 통과시 전송
+//    formObj.submit()
+//  })
+
+  const custom_file = document.querySelectorAll('.custom_file');
+
+  custom_file.forEach(customFile =>{
+    customFile.addEventListener('click',function(){
+      const id = this.id.split('_')[2];
+
+      const fileInput = document.querySelector(`#reviewImgFile_${id}`);
+
+      if(fileInput){
+        fileInput.click(); //클릭
+      }
+
+      document.querySelectorAll('.file_input').forEach(fileInput =>{
+        fileInput.addEventListener('change',function(){
+          const fileId = this.id.split('_')[1];
+          const fileNameElement = document.querySelector(`#fileName_${fileId}`);
+
+          if(this.files && this.files[0]){
+            //파일 이름 및 확장자 추출
+            const fileName = this.files[0].name;
+            const fileExt = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+
+            //이미지 파일 형식 유효성 검사
+            if(!["jpg","jpeg","gif","png","bmp"].includes(fileExt)){
+              alert("이미지 파일만 등록할 수 있습니다.");
+              this.value= ""; //파일 입력 초기화
+              return; //이벤트 종료
+            }
+
+            //파일 이름 표시
+            if(fileNameElement){
+              fileNameElement.textContent = fileName;
+            }
+
+            //이미지 미리 보기 기능 추가
+            const preview = document.querySelector('#preview'); //미리 보기 이미지용 태그
+            const reader = new FileReader();
+
+            reader.onload = function(e){
+              preview.src=e.target.result; // <img> 태그의 src 속성에 이미지 URL 설정
+              preview.alt = "이미지 미리 보기";
+            };
+
+            reader.readAsDataURL(this.files[0]); // 파일을 Data URL 로 읽기
+          }else{
+            //파일이 선택되지 않은 경우 초기화
+            if(fileNameElement){
+              fileNameElement.textContent = "선택된 파일 없음";
+            }
+            const preview = document.querySelector('#preview');
+            preview.src = "#"; // 기본 이미지 경로로 설정;
+            preview.alt = "이미지 준비중";
+
+          }
+
+        });
+
+      });
+
+    });
+
+  });
 
 </script>

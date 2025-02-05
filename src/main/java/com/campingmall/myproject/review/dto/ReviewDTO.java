@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReviewDTO {
 
-    private Long rno;        // 리뷰 ID
+    private Long id;        // 리뷰 ID
 
     @NotEmpty(message = "3자 이상 100자 이내로 입력하세요.")
     @Size(min=3,max=100)
