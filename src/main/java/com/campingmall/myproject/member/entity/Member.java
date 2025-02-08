@@ -37,19 +37,19 @@ public class Member {
     // MemberAddress와의 OneToMany 관계
     private String defaultAddress;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<MemberAddress> addresses = new ArrayList<>();
-
-    // 편의 메서드
-    public void addAddress(MemberAddress address) {
-        addresses.add(address);
-        address.setMember(this);
-    }
-
-    public void removeAddress(MemberAddress address) {
-        addresses.remove(address);
-        address.setMember(null);
-    }
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    private List<MemberAddress> addresses = new ArrayList<>();
+//
+//    // 편의 메서드
+//    public void addAddress(MemberAddress address) {
+//        addresses.add(address);
+//        address.setMember(this);
+//    }
+//
+//    public void removeAddress(MemberAddress address) {
+//        addresses.remove(address);
+//        address.setMember(null);
+//    }
 
     //소셜로그인관련
     private String socialId;            //회원 소셜로그인아이디
@@ -69,7 +69,7 @@ public class Member {
                 .password(passwordEncoder.encode(memberDTO.getPassword()))
                 .phoneNumber(memberDTO.getPhoneNumber())
                 .defaultAddress(memberDTO.getDefaultAddress())
-                .addresses(memberDTO.getAddresses())
+//                .addresses(memberDTO.getAddresses())
                 .email(memberDTO.getEmail())
                 .emailNotifications(memberDTO.isEmailNotifications())
                 .smsNotifications(memberDTO.isSmsNotifications())
