@@ -25,7 +25,7 @@
   - ./gradlew bootrun 실행
 
 5. 접속
-  - 브라우저에서 http://localhost:8080으로 접속합니다.
+  - 브라우저에서 http://localhost:8080 으로 접속합니다.
 
 #문의
 질문이나 문의 사항이 있으시면 [aladin1994@naver.com]로 연락주세요.
