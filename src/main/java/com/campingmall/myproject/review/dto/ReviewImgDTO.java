@@ -3,9 +3,10 @@ package com.campingmall.myproject.review.dto;
 import com.campingmall.myproject.review.entity.ReviewImg;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.modelmapper.ModelMapper;
 
-@Getter@Setter
+@Getter@Setter@ToString
 public class ReviewImgDTO {
 
     private Long id;            //리뷰 이미지 식별

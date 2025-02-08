@@ -2,8 +2,12 @@ package com.campingmall.myproject.review.entity;
 
 import com.campingmall.myproject.entity.BaseEntity;
 import com.campingmall.myproject.item.entity.Item;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter@Setter@ToString
 @AllArgsConstructor@NoArgsConstructor
@@ -24,7 +28,17 @@ public class Review extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false) // 외래키 설정
+    @JsonBackReference                              // 자식 쪽에서 부모를 참조할 때 사용
+    @ToString.Exclude                               // toString() 무한 루프 방지
     private Item item;              //item (FK)
+
+
+    @OneToMany(mappedBy = "review",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true,
+               fetch = FetchType.LAZY)
+    @ToString.Exclude // toString() 무한 루프 방지
+    private List<ReviewImg> reviewImgList = new ArrayList<>(); //reviewImg(FK)
 
     //수정 메서드
     public void change(String title, String content, int star){

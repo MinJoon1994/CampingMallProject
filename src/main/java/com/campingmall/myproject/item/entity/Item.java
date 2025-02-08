@@ -6,6 +6,7 @@ import com.campingmall.myproject.item.constant.ItemSellStatus;
 import com.campingmall.myproject.item.constant.ItemTypes;
 import com.campingmall.myproject.item.dto.ItemFormDTO;
 import com.campingmall.myproject.review.entity.Review;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,7 @@ public class Item extends BaseEntity {
     private ItemSellStatus itemSellStatus;  //상품 판매상태
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // 부모 쪽에서 자식을 관리할 때 사용
     private List<Review> reviews;           //구매 후기
 
     //--------------------------------------------------------//

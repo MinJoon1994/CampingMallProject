@@ -39,10 +39,12 @@ public class ReviewController {
     //1. Review 목록
     @GetMapping(value = "/list")
     public String list(PageRequestDTO pageRequestDTO, Model model, ItemSearchDTO itemSearchDTO){
-        
+
         //Review 목록
         PageResponseDTO<ReviewDTO> pageResponseDTO = reviewService.list(pageRequestDTO);
-        
+
+        log.info("=>pageResponseDTO:"+pageResponseDTO);
+
         model.addAttribute("pageResponseDTO",pageResponseDTO);
         
         //디스패치 했을 경우 pageRequestDTO 객체 공유가 되지 않을 경우 설정

@@ -7,6 +7,7 @@ import org.springframework.cglib.core.internal.LoadingCache;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter@Setter@ToString
 @AllArgsConstructor@NoArgsConstructor
@@ -23,7 +24,7 @@ public class ReviewDTO {
     @NotEmpty(message = "작성자는 반드시 존재해야 합니다.")
     private String author;   // 리뷰 작성자
 
-    private String loginId;  // 작성자 로그인 아이디
+    private String itemNm;   // 상품 이름
 
     private int star;        // 별점
 
@@ -34,4 +35,6 @@ public class ReviewDTO {
 
     private LocalDateTime regTime;
     private LocalDateTime updateTime;
+
+    private List<ReviewImgDTO> reviewImgList; // ✅ 추가: 리뷰 이미지 리스트
 }

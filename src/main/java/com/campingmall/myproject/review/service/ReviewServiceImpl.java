@@ -93,28 +93,36 @@ public class ReviewServiceImpl implements ReviewService{
         review.change(reviewDTO.getTitle(),reviewDTO.getContent(),reviewDTO.getStar());
 
         //3-4. 수정된 Entity -> DB에 반영
-        Long rno = reviewRepository.save(review).getId();
+        Long id = reviewRepository.save(review).getId();
 
-        return rno;
+        return id;
     }
 
     //4. Review 삭제
     @Override
-    public void delete(Long rno) {
-        reviewRepository.deleteById(rno);
+    public void delete(Long id) {
+        reviewRepository.deleteById(id);
     }
     
     //5. 페이징 처리
     @Override
     public PageResponseDTO<ReviewDTO> list(PageRequestDTO pageRequestDTO) {
 
+        log.info("=>List "+pageRequestDTO);
+
         //검색 타입, 키워드에 대한 처리
         String[] types = pageRequestDTO.getTypes();
         String keyword = pageRequestDTO.getKeyword();
-        Pageable pageable = pageRequestDTO.getPageable("rno");
+        Pageable pageable = pageRequestDTO.getPageable("id");
+
+        log.info("=>types: "+types);
+        log.info("=>keyword: "+keyword);
+        log.info("=>pageable: "+pageable);
 
         //조건 검색한 결과값 가져오기
         Page<Review> result = reviewRepository.searchAll(types,keyword,pageable);
+
+        log.info("=>result:"+result);
 
         //Page 객체 있는 내용들을 List 구조로 가져오기
         List<ReviewDTO> dtoList = result.getContent().stream()

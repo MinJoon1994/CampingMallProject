@@ -4,19 +4,36 @@
       layout:decorate="~{layouts/base}">
 
 <div layout:fragment="content">
-  <div class="container w-50 form_wrap mx-auto">
-    <div class="d-flex justify-content-start mb-5">
+  <div class="form_wrap mx-auto">
+    <div class="d-flex justify-content-start mb-2 review_title">
       <span class="title"><strong>REVIEW</strong></span>
     </div>
-    <div>
+    <div class="review_title_sub mb-3">
       상품사용 후기 입니다.
     </div>
     <!-- 후기 표시될 공간 -->
-    <div class="items">
+    <div class="reviews">
+      <div th:block th:each="review : ${pageResponseDTO.dtoList}">
+          <div class="review_item">
+            <div>
+                <a th:href="'/review/'+${review.id}">
+                  <img th:src="${review.reviewImgList[0].imgUrl}"
+                       onerror="this.onerror=null; this.src='/images/intro.jpg';">
+                </a>
+            </div>
 
-      <!-- 상품 유닛 (반복시킬 단위) -->
+            <div>
+                <ul>
+                    <li><span>[[${review.title}]]</span></li>
+                    <li><span>[[${review.content}]]</span></li>
+                    <li><span>[[${review.itemNm}]]</span></li>
+                </ul>
+            </div>
+          </div><!-- review_item end -->
 
-    </div>
+      </div><!-- th:block end -->
+
+    </div> <!-- reviews end -->
 
   </div>
 </div>
@@ -37,7 +54,58 @@
   span{pointer-events: auto;}
 
   .form_wrap{
-      margin-top:100px;
+    margin-top: 100px;
+    margin-left: 200px;
+    margin-right: auto;
+    border: 0px solid;
+    width: 1680px;
+    height: 1400px;
+  }
+
+  .review_title{
+    margin-left:75px;
+  }
+
+  .review_title_sub{
+    margin-left:75px;
+    font-weight:800;
+  }
+
+  .title{
+    font-size:30px;
+    font-weight: 800;
+  }
+
+  .reviews{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 1680px;
+    height: 1265px;
+  }
+
+  .review_item{
+    box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 계산 */
+    margin-right: 0;
+    margin-left: 75px;
+    margin-top: 10px;
+  }
+
+  .review_item a{
+    display:block;
+    width: 450px;
+    height: 550px;
+  }
+
+  .review_item img{
+    width: 450px;
+    height: 550px;
+    object-fit: cover;
+  }
+
+  .review_item ul{
+    margin: 0;
+    padding: 0;
   }
 </style>
 
