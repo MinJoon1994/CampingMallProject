@@ -20,6 +20,12 @@
 3. DB 설정
   - Maria DB에 campingmall DB생성
   - src/main/resources/application.properties 파일에서 데이터베이스 연결 설정을 수정
+  - cd 백업DB파일 있는곳 주소
+  - mysql -uroot -p1111 [데이터베이스 이름] < [백업데이터베이스 이름]
+
+5. 이미지 업로드 공간 세팅
+  - C:\upload\campingmall 이미지 업로드하는 폴더 만들기
+  - 폴더안에 이미지 백업 폴더 내용 넣어주기
 
 4. 애플리케이션 실행:
   - ./gradlew bootrun 실행
