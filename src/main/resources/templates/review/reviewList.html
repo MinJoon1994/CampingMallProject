@@ -24,9 +24,10 @@
 
             <div>
                 <ul>
-                    <li><span>[[${review.title}]]</span></li>
-                    <li><span>[[${review.content}]]</span></li>
-                    <li><span>[[${review.itemNm}]]</span></li>
+                    <li class="reviews_title"><span><strong>[[${review.title}]]</strong></span></li>
+                    <li class="reviews_content"><span>[[${review.content}]]</span></li>
+                    <li class="reviews_author"><span>[[${review.author}]]</span></li>
+                    <li class="reviews_itemNm text-center"><span>[[${review.itemNm}]]</span></li>
                 </ul>
             </div>
           </div><!-- review_item end -->
@@ -34,6 +35,37 @@
       </div><!-- th:block end -->
 
     </div> <!-- reviews end -->
+
+    <!-- 페이징 버튼 -->
+    <div class="custom_page_btn" th:if="${pageResponseDTO.total>0}">
+        <div>
+            <ul class="custom_pagination d-flex justify-content-center gap-2">
+                <!-- 이전 페이지 -->
+                <li class="custom_page_item mycursor" th:if="${pageResponseDTO.prev}">
+                    <a class="custom_page_link" th:data-num="${pageResponseDTO.start-1}">
+                        Prev
+                    </a>
+                </li>
+                <!-- 페이지 버튼 -->
+                <th:block th:each="page:${#numbers.sequence(pageResponseDTO.start,pageResponseDTO.end)}">
+                    <li class="custom_page_item" th:classappend="${pageResponseDTO.page == page}? 'active': 'mycursor'">
+                        <span class="custom_page_link" th:if="${pageResponseDTO.page == page}">
+                            <h5><span>[</span>[[${page}]]<span>]</span></h5>
+                        </span>
+                        <a class="custom_page_link" th:unless="${pageResponseDTO.page == page}" th:href="'/review/list?page='+${page}">
+                            <h5><span>[</span>[[${page}]]<span>]</span></h5>
+                        </a>
+                    </li>
+                </th:block>
+                <!-- 다음 페이지 -->
+                <li class="custom_page_item mycursor" th:if="${pageResponseDTO.next}">
+                    <a class="custom_page_link" th:data-num="${pageResponseDTO.end+1}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
   </div>
 </div>
@@ -52,6 +84,10 @@
   scroll{pointer-events: auto;}
   button{pointer-events: auto;}
   span{pointer-events: auto;}
+
+  .mycursor{
+    cursor:pointer;
+  }
 
   .form_wrap{
     margin-top: 100px;
@@ -81,7 +117,31 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     width: 1680px;
-    height: 1265px;
+  }
+
+  .reviews_title{
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+  .reviews_content{
+    margin-bottom: 30px;
+    padding: 10px;
+    width: 450px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .reviews_author{
+    margin-top:20px;
+    margin-bottom:10px;
+    padding:10px;
+    font-size: 15px;
+    color: rgba(0,0,0,0.5);
+  }
+
+  .reviews_itemNm{
+    border-top: 1px solid rgba(0,0,0,0.3);
   }
 
   .review_item{
@@ -89,6 +149,8 @@
     margin-right: 0;
     margin-left: 75px;
     margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0,0,0,0.3);
   }
 
   .review_item a{
@@ -107,9 +169,17 @@
     margin: 0;
     padding: 0;
   }
+
+  .custom_page_btn{
+    margin-top:50px;
+    margin-bottom:100px;
+  }
+
+
 </style>
 
 <!-- 현재 페이지에서만 사용하는 JS 정의 -->
 <script layout:fragment="myscript" th:inline="javascript">
-  console.log("자바스크립트 연결 완료")
+    console.log("자바스크립트 연결 완료")
+
 </script>

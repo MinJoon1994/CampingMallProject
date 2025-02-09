@@ -40,6 +40,8 @@ public class ReviewController {
     @GetMapping(value = "/list")
     public String list(PageRequestDTO pageRequestDTO, Model model, ItemSearchDTO itemSearchDTO){
 
+        log.info("pageRequestDTO: "+pageRequestDTO);
+
         //Review 목록
         PageResponseDTO<ReviewDTO> pageResponseDTO = reviewService.list(pageRequestDTO);
 
