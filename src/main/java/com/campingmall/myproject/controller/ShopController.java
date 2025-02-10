@@ -5,6 +5,8 @@ import com.campingmall.myproject.item.dto.ItemDTO;
 import com.campingmall.myproject.item.dto.ItemFormDTO;
 import com.campingmall.myproject.item.dto.ItemSearchDTO;
 import com.campingmall.myproject.item.service.ItemService;
+import com.campingmall.myproject.review.dto.ReviewDTO;
+import com.campingmall.myproject.review.service.ReviewService;
 import com.campingmall.myproject.shop.dto.MainItemDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -28,6 +31,7 @@ import java.util.Optional;
 public class ShopController {
 
     private final ItemService itemService;
+    private final ReviewService reviewService;
 
     //1. shop 메인 페이지
     @GetMapping("/main")
@@ -61,10 +65,16 @@ public class ShopController {
     @GetMapping(value="/item/{itemId}")
     public String shopItemDetail(ItemSearchDTO itemSearchDTO,
                                  @PathVariable("itemId")Long itemId, Model model){
-        //상품 id가지고 상품상세정보 요청: 상품 기본정보, 상품이미지 정보
+        //상품 id 가지고 상품 상세정보 요청: 상품 기본정보, 상품이미지 정보
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId);
+
+        //상품 id 가지고 상품 리뷰 정보 요청
+        List<ReviewDTO> reviewDTOList = reviewService.getReviewsByItemId(itemId);
+
+        model.addAttribute("reviewDTOList",reviewDTOList);
         model.addAttribute("item",itemFormDTO);
         model.addAttribute("itemSearchDTO",itemSearchDTO);
+
         return "shop/shopItemDetail";
     }
 

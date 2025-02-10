@@ -6,21 +6,21 @@ import com.campingmall.myproject.order.dto.OrderHistoryDTO;
 import com.campingmall.myproject.order.service.OrderService;
 import com.campingmall.myproject.review.dto.ReviewDTO;
 import com.campingmall.myproject.review.dto.ReviewFormDTO;
+import com.campingmall.myproject.review.entity.Review;
 import com.campingmall.myproject.review.service.ReviewService;
 import com.campingmall.myproject.search.dto.PageRequestDTO;
 import com.campingmall.myproject.search.dto.PageResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -39,13 +39,13 @@ public class ReviewController {
     //1. Review 목록
     @GetMapping(value = "/list")
     public String list(PageRequestDTO pageRequestDTO, Model model, ItemSearchDTO itemSearchDTO){
-
-        log.info("pageRequestDTO: "+pageRequestDTO);
-
+        
         //Review 목록
         PageResponseDTO<ReviewDTO> pageResponseDTO = reviewService.list(pageRequestDTO);
 
-        log.info("=>pageResponseDTO:"+pageResponseDTO);
+        log.info("======== shop/list prev/next ========");
+        log.info("prev: "+pageResponseDTO.isPrev());
+        log.info("next: "+pageResponseDTO.isNext());
 
         model.addAttribute("pageResponseDTO",pageResponseDTO);
         
@@ -104,9 +104,9 @@ public class ReviewController {
 
         //리뷰 등록 서비스 호출
         try {
-            Long rno = reviewService.register(reviewFormDTO, reviewImgFileList);
+            Long id = reviewService.register(reviewFormDTO, reviewImgFileList);
             redirectAttributes.addFlashAttribute("result","리뷰가 등록되었습니다.");
-            redirectAttributes.addFlashAttribute("rno",rno);
+            redirectAttributes.addFlashAttribute("id",id);
         }catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage","리뷰 등록 중 에러가 발생하였습니다.");
             return "redirect:/review/register";
@@ -114,6 +114,78 @@ public class ReviewController {
 
 
         return "redirect:/review/list";
+    }
+
+
+    //3. Review 자세히보기
+    @GetMapping("/read/{id}")
+    public String read(@PathVariable ("id") Long id, PageRequestDTO pageRequestDTO, Model model, ItemSearchDTO itemSearchDTO){
+
+        //리뷰 자세히 보기 서비스 요청
+        ReviewDTO reviewDTO = reviewService.readOne(id);
+
+        model.addAttribute("itemSerachDTO",itemSearchDTO);
+        model.addAttribute("dto",reviewDTO);
+
+        return "/review/read";
+    }
+    
+    //4. Review 삭제
+    @PreAuthorize("principal.username == #review.author") // ✅ Review 엔티티의 author 값과 비교
+    @GetMapping(value = "/remove/{id}")
+    public ResponseEntity<String> remove(@PathVariable("id") Long id) {
+        try {
+            reviewService.delete(id); // ✅ 삭제 실행
+            return ResponseEntity.ok("삭제되었습니다."); // ✅ 성공 시 200 OK 응답
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("삭제 실패: " + e.getMessage()); // ✅ 실패 시 500 에러 반환
+        }
+    }
+    
+    //5. Review 수정
+    
+    //5-1. Review 수정폼 불러오기
+    @PreAuthorize("principal.username == #review.author") // ✅ Review 엔티티의 author 값과 비교
+    @GetMapping(value = "/modify/{id}")
+    public String modifyForm(@PathVariable("id") Long id, Model model,ItemSearchDTO itemSearchDTO){
+        ReviewDTO reviewDTO = reviewService.readOne(id);
+        model.addAttribute("itemSearchDTO",itemSearchDTO);
+        model.addAttribute("dto",reviewDTO);
+
+        return "/review/modify";
+    }
+    
+    
+    //5-2. Review 수정폼 처리
+    @PostMapping("/modify/{id}")
+    public String modify(@PathVariable("id") Long id,
+                         @Valid ReviewDTO reviewDTO,
+                         @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFileList,
+                         RedirectAttributes redirectAttributes){
+
+        log.info("===============후기 수정폼===============");
+        log.info("=>id: "+id);
+        log.info("=>reviewDTO: "+reviewDTO);
+        log.info("=>reviewImgFileList: "+reviewImgFileList);
+        
+        try {
+
+            reviewService.modify(id,reviewDTO,reviewImgFileList);
+            redirectAttributes.addFlashAttribute("result","리뷰가 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("id",id);
+
+            return "redirect:/review/read/"+id;
+
+        }catch (Exception e){
+            
+            log.info("후기 수정 오류 발생");
+            log.info(e.getMessage());
+            
+            redirectAttributes.addFlashAttribute("errorMessage","리뷰 등록 중 에러가 발생하였습니다.");
+            return "redirect:/review/modify/"+id;
+
+        }
     }
 
 }

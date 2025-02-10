@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -48,25 +51,15 @@ public class ReviewImgServiceImpl implements ReviewImgService {
         
     }
 
-    // 2. 리뷰 이미지 정보 수정 서비스
+    // 2. 리뷰 이미지 정보 삭제
     @Override
-    public void updateReviewImg(Long reviewImgId, MultipartFile reviewImgFile) throws Exception {
-        if(!reviewImgFile.isEmpty()){
-            //2.1 기존 리뷰 이미지 불러오기
-            ReviewImg savedReviewImg = reviewImgRepository.findById(reviewImgId)
-                    .orElseThrow(EntityNotFoundException::new);
+    public void deleteReviewImg(Long reviewId) throws Exception {
 
-            //2.2 기존 리뷰 이미지 삭제
-            if(!StringUtils.isEmpty(savedReviewImg.getImgName())){
-                fileService.deleteFile(reviewImgLocation+"/"+savedReviewImg.getImgName());
-            }
+        //2.1 review Id로 reviewImgEntity 불러오기
+        List<ReviewImg> reviewImgList = reviewImgRepository.findByReviewIdOrderByIdAsc(reviewId);
 
-            //2.3 변경된 리뷰 이미지 업로드
-            String oriImgName = reviewImgFile.getOriginalFilename();
-            String imgName = fileService.uploadFile(reviewImgLocation, oriImgName, reviewImgFile.getBytes());
-            String imgUrl = "/image/review/"+imgName;
+        //2.2 불러온 ReviewImgId 전부 삭제
+        reviewImgRepository.deleteAll(reviewImgList);
 
-            savedReviewImg.updateReviewImg(oriImgName,imgName, imgUrl);
-        }
     }
 }

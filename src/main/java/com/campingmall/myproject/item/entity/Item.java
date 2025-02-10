@@ -36,6 +36,11 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;  //상품 판매상태
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // 부모 쪽에서 자식을 관리할 때 사용
+    @ToString.Exclude //toString 무한 루프 방지
+    private List<ItemImg> itemImgList;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // 부모 쪽에서 자식을 관리할 때 사용
     private List<Review> reviews;           //구매 후기

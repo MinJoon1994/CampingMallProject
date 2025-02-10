@@ -117,33 +117,18 @@
                     <div class="d-flex gap-2 justify-content-start mt-3">
                         <!-- 구매후기 반복될 유닛-->
                         <!-- <div th:each="itemImg : ${item.itemImgDTOList}"> -->
-                        <div class="review">
+                        <div class="review" th:each="review: ${reviewDTOList}">
                             <!-- 후기 제목 -->
-                            <div class="review-title">텐트 내돈내산 찐후기</div>
+                            <div class="review-title">
+                                <a th:href="@{'/review/read/'+${review.id}}" th:text="${review.title}"></a>
+                            </div>
                             <!-- 별점 -->
-                            <div class="review-rating">★★★★☆</div>
+                            <div class="review-rating" th:data-star="${review.star}">별점</div>
                             <!-- 후기 내용 -->
-                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
+                            <div class="review-content" th:text="${review.content}">후기 내용</div>
+                            <!-- 작성자 -->
+                            <div class="review-author" th:text="${review.author}">작성자</div>
                         </div>
-
-                        <div class="review">
-                            <!-- 후기 제목 -->
-                            <div class="review-title">텐트 내돈내산 찐후기</div>
-                            <!-- 별점 -->
-                            <div class="review-rating">★★★★☆</div>
-                            <!-- 후기 내용 -->
-                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
-                        </div>
-
-                        <div class="review">
-                            <!-- 후기 제목 -->
-                            <div class="review-title">텐트 내돈내산 찐후기</div>
-                            <!-- 별점 -->
-                            <div class="review-rating">★★★★☆</div>
-                            <!-- 후기 내용 -->
-                            <div class="review-content">이 텐트는 정말 만족스러웠어요. 캠핑이 즐거워졌습니다!</div>
-                        </div>
-
                     </div>
                 </td></tr>
             </table>
@@ -237,6 +222,7 @@ button{pointer-events: auto;}
 }
 
 .review {
+  display:colum;
   border: 1px solid #ddd; /* 후기 단위 경계 */
   padding: 10px;
   margin-bottom: 10px;
@@ -252,6 +238,10 @@ button{pointer-events: auto;}
   margin-bottom: 5px;
 }
 
+.review-title a:hover{
+    color:rgba(0,0,0,0.5);
+}
+
 .review-rating {
   color: #ffcc00; /* 별점 색상 */
   margin-bottom: 5px;
@@ -264,6 +254,10 @@ button{pointer-events: auto;}
   text-overflow: ellipsis; /* 말줄임 표시 */
   white-space: nowrap; /* 텍스트를 한 줄로 표시 */
   max-width: 100%; /* 부모 요소 크기에 맞춤 */
+}
+
+.review-author{
+    margin-top:60px;
 }
 
 .review_table{
@@ -380,6 +374,27 @@ button{pointer-events: auto;}
             }
             mainImg.src=this.src;
         });
+    });
+
+    //----------------------------------------------------------//
+    //              별 점수 관련
+    //----------------------------------------------------------//
+
+    const reviewRatings = document.querySelectorAll(".review-rating");
+
+    reviewRatings.forEach(ratingElement => {
+        const starCount = parseInt(ratingElement.getAttribute("data-star"), 10); // 데이터 속성에서 별점 가져오기
+        let starsHtml = "";
+
+        for (let i = 1; i <= 5; i++) {
+            if (i <= starCount) {
+                starsHtml += `<span style="color: gold;">★</span>`; // 별점 이상이면 골드 색상
+            } else {
+                starsHtml += `<span style="color: lightgray;">★</span>`; // 별점 미만이면 회색
+            }
+        }
+
+        ratingElement.innerHTML = starsHtml; // 별점 HTML 삽입
     });
 
     //----------------------------------------------------------//

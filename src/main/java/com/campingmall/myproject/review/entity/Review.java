@@ -2,6 +2,7 @@ package com.campingmall.myproject.review.entity;
 
 import com.campingmall.myproject.entity.BaseEntity;
 import com.campingmall.myproject.item.entity.Item;
+import com.campingmall.myproject.review.dto.ReviewImgDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +35,7 @@ public class Review extends BaseEntity {
 
 
     @OneToMany(mappedBy = "review",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.REMOVE,
                orphanRemoval = true,
                fetch = FetchType.LAZY)
     @ToString.Exclude // toString() 무한 루프 방지

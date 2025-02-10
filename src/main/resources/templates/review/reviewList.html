@@ -16,7 +16,7 @@
       <div th:block th:each="review : ${pageResponseDTO.dtoList}">
           <div class="review_item">
             <div>
-                <a th:href="'/review/'+${review.id}">
+                <a th:href="@{'/review/read/'+${review.id}}">
                   <img th:src="${review.reviewImgList[0].imgUrl}"
                        onerror="this.onerror=null; this.src='/images/intro.jpg';">
                 </a>
@@ -125,11 +125,15 @@
   }
 
   .reviews_content{
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     padding: 10px;
     width: 450px;
-    height: 40px;
+    height: 30px;
     font-size: 15px;
+    display:inline-block;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .reviews_author{

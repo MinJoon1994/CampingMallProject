@@ -1,5 +1,6 @@
 package com.campingmall.myproject.review.dto;
 
+import com.campingmall.myproject.review.entity.ReviewImg;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -24,11 +25,12 @@ public class ReviewDTO {
     @NotEmpty(message = "작성자는 반드시 존재해야 합니다.")
     private String author;   // 리뷰 작성자
 
-    private String itemNm;   // 상품 이름
+    private Long itemId;        // 상품 ID (item 의 FK);
+    private String itemNm;      // 상품 이름
+    private String itemImgUrl;  // ✅ 상품 이미지 URL 추가
+    private int itemPrice;     // 상품 가격
 
     private int star;        // 별점
-
-    private Long itemId;     // 상품 ID (item 의 FK);
 
     private String createdBy;
     private String modifiedBy;
@@ -36,5 +38,5 @@ public class ReviewDTO {
     private LocalDateTime regTime;
     private LocalDateTime updateTime;
 
-    private List<ReviewImgDTO> reviewImgList; // ✅ 추가: 리뷰 이미지 리스트
+    private List<ReviewImg> reviewImgList; // ✅ 추가: 리뷰 이미지 리스트
 }

@@ -1,0 +1,256 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/.thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+
+<div layout:fragment="content">
+    <div class="container w-50 form_wrap mx-auto">
+        <div class="d-flex justify-content-start mb-2 review_title">
+            <span class="title"><strong>REVIEW</strong></span>
+        </div>
+        <div class="review_item_box">
+            <img th:src="${dto.itemImgUrl}" onerror="this.onerror=null; this.src='/images/intro.jpg';"/>
+            <div class="mx-3">
+                <div>
+                    <span><strong>[[${dto.itemNm}]]</strong></span>
+                </div>
+                <div>
+                    <span>[[${#numbers.formatInteger(dto.ItemPrice,3,'COMMA')}]]원</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="review_content_box">
+            <div class="review_title">
+                [[${dto.title}]]
+            </div>
+            <div class="d-flex justify-content-between mb-5">
+                <div class="star-rating">
+                    <span>별점: </span>
+                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                          th:classappend="${i <= dto.star} ? 'gold-star' : 'grey-star'">★</span>
+                </div>
+
+                <div class="review_author">
+                    작성자: [[${dto.author}]]
+                </div>
+            </div>
+
+            <!-- 아이템 이미지 -->
+            <div class="Main_image w-50">
+                <img class="itemImg_select" th:src="${dto.reviewImgList[0].imgUrl}" onerror="this.src='../../images/intro.jpg';"/>
+                <div class="d-flex gap-2 justify-content-start mt-3 itemimg_slider">
+                    <div th:each="reviewImg : ${dto.reviewImgList}">
+                        <img class="itemImg" th:src="${reviewImg.imgUrl}" alt="이미지준비중" onerror="this.src='../../images/이미지준비중.jpg'; this.classList.add('error-image')"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 글내용 -->
+            <div class="review_content">
+                [[${dto.content}]]
+            </div>
+        </div><!-- review content box -->
+
+        <!-- 버튼 그룹 -->
+        <div th:with="user=${#authentication.principal}" class="d-flex justify-content-between review_btn_group">
+            <div th:if="${user != null && user.username == dto.author}">
+                <button type="button" class="modify_btn">수정</button>
+                <button type="button" class="delete_btn">삭제</button>
+            </div>
+            <div>
+                <button type="button" class="list_btn">목록</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 현재 페이지에서만 사용하는 CSS정의 -->
+<style layout:fragment="mystyle"  th:inline="css">
+    *{pointer-events: none;}
+    a{all: unset;text-decoration: none;color: inherit;pointer-events: auto;}
+    a:hover{cursor:pointer;}
+    p{pointer-events: auto;}
+    input{pointer-events: auto;}
+    img{pointer-events: auto;}
+    table{pointer-events: auto; width:100%;}
+    select{pointer-events: auto;}
+    option{pointer-events: auto;}
+    scroll{pointer-events: auto;}
+    button{pointer-events: auto;}
+    span{pointer-events: auto;}
+
+    .form_wrap{
+        margin-top:100px;
+    }
+
+    .review_item_box{
+        display:flex;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 25px;
+        border-top: 1px solid rgba(0,0,0,0.3);
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .review_item_box img{
+        height:70px;
+        width:50px;
+        object-fit:cover;
+    }
+
+    .review_title{
+        font-size: 25px;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .review_author{
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .star-rating {
+        font-size: 24px; /* 별 크기 */
+    }
+
+    .gold-star {
+        color: gold; /* 별점에 해당하는 별 */
+    }
+
+    .grey-star {
+        color: lightgrey; /* 빈 별 */
+    }
+
+    .itemImg_select{
+        width: 650px;
+        height: 500px;
+        object-fit: cover;
+        margin-top: 10px;
+    }
+
+    .itemimg_slider{
+        overflow-x:auto;
+        pointer-events:auto;
+    }
+
+    .itemImg{
+        display:flex;
+        width: 108px;
+        height: 108px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        cursor: pointer; /* 마우스 포인터를 손 모양으로 변경 */
+    }
+
+    .error-image {
+        cursor: default; /* 에러 이미지일 경우 기본 커서로 변경 */
+        opacity: 0.5; /* 시각적으로 에러 이미지를 구분 */
+    }
+
+    .review_content{
+        margin-top: 30px;
+        margin-bottom: 70px;
+    }
+
+    .review_content_box{
+        border-bottom: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .review_btn_group{
+        margin-top: 30px;
+    }
+
+    .delete_btn{
+        border: 0px;
+        background: rgba(0,0,0,0);
+        margin-left:15px;
+    }
+
+    .modify_btn{
+        border: 0px;
+        background: rgba(0,0,0,0);
+    }
+
+    .list_btn{
+        border: 0px;
+        background: rgba(0,0,0,0);
+    }
+
+</style>
+
+<!-- 현재 페이지에서만 사용하는 JS 정의 -->
+<script layout:fragment="myscript" th:inline="javascript">
+    console.log("자바스크립트 연결 완료")
+
+    //별점 표시
+    document.querySelectorAll(".star").forEach(div => {
+        let starCount = parseInt(div.getAttribute("data-star"));
+        div.innerHTML = "★".repeat(starCount) + "☆".repeat(5 - starCount);
+    });
+
+    //----------------------------------------------------------//
+    //              아이템 이미지 클릭 및 뷰 관련
+    //----------------------------------------------------------//
+
+    const itemImgs = document.querySelectorAll(".itemImg");
+    const mainImg = document.querySelector('.itemImg_select');
+
+    itemImgs.forEach((img)=>{
+        img.addEventListener("click", function(){
+                if (this.classList.contains("error-image")) {
+                    return;
+                }
+            mainImg.src = this.src;
+        });
+
+        img.addEventListener("mouseenter",function(){
+            if (this.classList.contains("error-image")){
+                return;
+            }
+            mainImg.src=this.src;
+        });
+    });
+
+    // 목록 버튼 클릭
+    document.querySelector(".list_btn").addEventListener('click',function(){
+        window.location.href = "/review/list";
+    })
+
+    // 수정 버튼
+    document.querySelector(".modify_btn").addEventListener('click',function(){
+
+        const id = [[${dto.id}]];
+
+        window.location.href = `/review/modify/${id}`
+    })
+
+
+    // 삭제 버튼
+    const deleteBtn = document.querySelector('.delete_btn');
+
+    if(deleteBtn){
+        deleteBtn.addEventListener('click',function(e){
+
+            const id = [[${dto.id}]];
+
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch(`/review/remove/${id}`, {
+                    method: "GET"
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("삭제 실패: " + response.statusText); // 서버 응답 상태 메시지 추가
+                    }
+                    return response.text(); // 서버에서 받은 응답을 텍스트로 변환
+                }).then(message => {
+                    alert(message); // 서버에서 보낸 메시지를 alert으로 출력
+                    window.location.href = "/review/list"; // 리스트 페이지로 이동
+                }).catch(error => {
+                    console.error("삭제 중 오류 발생:", error);
+                    alert("삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+                });
+            }
+        })
+    }
+</script>
