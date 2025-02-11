@@ -1,5 +1,9 @@
 package com.campingmall.myproject.security;
 
+import com.campingmall.myproject.exception.Custom403Handler;
+import com.campingmall.myproject.member.repository.MemberRepository;
+import com.campingmall.myproject.security.handler.CustomSocialLoginSuccessHandler;
+import com.campingmall.myproject.security.oauth2.CustomOAuth2UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
@@ -34,6 +39,8 @@ public class CustomSecurityConfig {
 
     private final DataSource dataSource;
     private final CustomUserDetailService userDetailService;
+    private final MemberRepository memberRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     //암호화 시켜주는 객체 생성
     @Bean
@@ -44,7 +51,7 @@ public class CustomSecurityConfig {
 
         //security 관련 설정
         log.info("=================== Security configure : securityFilterChain ===================");
-        
+
         // 1. 로그인 과정 생략(제작시 편의를 위해)
         //http.csrf(c->c.disable()); // CSRF 요청 비활성화 RestAPI 에서는 비활성화 안됨
         http.httpBasic(AbstractHttpConfigurer::disable)
@@ -90,6 +97,16 @@ public class CustomSecurityConfig {
             auth.anyRequest().authenticated();
         });
 
+        // ✅ 2. 소셜 로그인 설정
+        http.oauth2Login(oauth -> oauth
+                .loginPage("/member/login") // 일반 로그인과 동일한 페이지 사용
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService) // CustomOAuth2UserService 적용
+                )
+                .successHandler(authenticationSuccessHandler()) // 소셜 로그인 성공 핸들러
+                .failureUrl("/member/login/error")
+        );
+
         // 3. 로그아웃 관련 설정
         // 3.1 기본설정
         http.logout(Customizer.withDefaults());
@@ -131,5 +148,25 @@ public class CustomSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         log.info("정적 지원 접근 설정 실행");
         return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
+    }
+
+    //---------------------------------------------------------------------------------//
+    //  5. 접근 권한에 맞지 않은 요청시 403에러 핸들러
+    //---------------------------------------------------------------------------------//
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        log.info("------ 접근 거부 커스텀 핸들러");
+        return new Custom403Handler();
+    }
+
+    //---------------------------------------------------------------------------------//
+    // 7.1 소셜 로그인 성공 처리하는 핸들러
+    //---------------------------------------------------------------------------------//
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        log.info("소셜 로그인 성공 핸들러 Loading...");
+        return new CustomSocialLoginSuccessHandler(memberRepository,passwordEncoder());
     }
 }

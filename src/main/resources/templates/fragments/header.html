@@ -32,7 +32,7 @@
         <div>
             <ul class="Login-nav m-3 p-3">
                 <li sec:authorize="isAuthenticated()">
-                    <a class="navbar" th:href="@{#}">[[${#authentication.principal.username}]]<span class="navbar_name">님</span></a>
+                    <a class="navbar_name" th:href="@{#}">[[${username}]]<span class="navbar_name">님</span></a>
                 </li>
                 <li sec:authorize="isAnonymous()">
                     <a class="navbar" th:href="@{/member/login}">LOGIN</a>

@@ -87,8 +87,8 @@
     </div>
     <div>
         <ul class="Login-nav m-3 p-3">
-            <li sec:authorize="isAuthenticated()">
-                <a class="navbar" th:href="@{#}">[[${#authentication.principal.username}]]<span class="navbar_name">님</span></a>
+            <li th:if="${username != null}">
+                <a class="navbar_name" th:href="@{#}" th:text="${username + '님'}"></a>
             </li>
             <li sec:authorize="isAnonymous()">
                 <a class="navbar" th:href="@{/member/login}">LOGIN</a>

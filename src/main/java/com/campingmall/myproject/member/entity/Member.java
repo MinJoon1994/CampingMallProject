@@ -34,30 +34,35 @@ public class Member {
     private Role role;                  //회원 권한설정(USER 기본)
 
     //배송관련
-    // MemberAddress와의 OneToMany 관계
-    private String defaultAddress;
-
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-//    private List<MemberAddress> addresses = new ArrayList<>();
-//
-//    // 편의 메서드
-//    public void addAddress(MemberAddress address) {
-//        addresses.add(address);
-//        address.setMember(this);
-//    }
-//
-//    public void removeAddress(MemberAddress address) {
-//        addresses.remove(address);
-//        address.setMember(null);
-//    }
+    private String defaultAddress;             //회원 주소
 
     //소셜로그인관련
     private String socialId;            //회원 소셜로그인아이디
+
+    //추가
+    private String nickname;    // 닉네임
+    private boolean del;        // 회원 탈퇴 여부
+    private boolean social;     // 소셜 로그인 사용 여부: false 이면 : 일반 회원들만 사용 대상
+    
 
     //약관동의
     private boolean emailNotifications; //이메일 수신동의
     private boolean smsNotifications;   //sms 수신동의
     private boolean marketingConsent;   //마케팅 수신동의
+
+    @ElementCollection(fetch = FetchType.EAGER) // 소셜 로그인시 Role 값을 세션정보 전환
+    @Builder.Default            // 회원 접근 권한 Role
+    private List<Role> memberRoleList = new ArrayList<>();
+
+    //회원 접근 권한 부여
+    public void addRole(Role memberRole){
+        memberRoleList.add(memberRole); //USER, MANAGER, ADMIN
+    }
+
+    //회원 접근 권한 모두 회수
+    public void clearRole(){memberRoleList.clear();}
+    public void changePw(String pw){this.password=pw;}
+    public void changeSocial(boolean social){this.social=social;}
 
     //1.dto -> Entity
     public static Member createMember(MemberDTO memberDTO,

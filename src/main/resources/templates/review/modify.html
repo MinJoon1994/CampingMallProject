@@ -14,7 +14,7 @@
     <form th:action="@{/review/modify/{id}(id=${dto.id})}" method="POST" enctype="multipart/form-data">
       <!-- 리뷰 ID (숨김 필드) -->
       <input type="hidden" name="id" th:value="${dto.id}"/>
-      <input type="hidden" name="author" th:value="${#authentication.principal.username}"/>
+      <input type="hidden" name="author" th:value="${username}"/>
 
       <!-- 후기 제목 -->
       <div class="mt-3 mb-3">
